@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alunos</title>
+</head>
+<body>
+    <img src="{{ url_for('static', filename='img/icon.svg') }}" alt="Ícone Instituto Federal" width="25"> <br>
+
+    <ul>
+        {% for aluno in alunos %}
+            <li>
+                <strong>{{ aluno.name }}</strong> - 
+                {{ aluno.turma }} {{ aluno.curso }} - 
+                Email: {{ aluno.email }}
+            </li>
+        {% endfor %}
+    </ul>
+    <button onclick="window.location.href='{{ url_for('home') }}'">Voltar</button>
+</body>
+</html>
