@@ -58,8 +58,8 @@ def insertAluno(aluno: dict):
         'birthdate': aluno['birthdate'],
         'cpf': cipher.encrypt(aluno['cpf'].encode()).decode(),
         'email': aluno['email'],
-        'course': aluno.get['course'],  
-        'class': aluno.get['class']           
+        'course': aluno.get('course'),  
+        'class': aluno.get('class')           
     }).execute()
 
 
@@ -75,8 +75,8 @@ def selectAllAlunos():
             'birthdate': aluno['birthdate'],
             'cpf': cipher.decrypt(aluno['cpf'].encode()).decode(),
             'email': aluno['email'],
-            'course': aluno.get['course'],
-            'class': aluno.get['class']
+            'course': aluno.get('course'),
+            'class': aluno.get('class')
         })
     return alunos
 
@@ -91,12 +91,12 @@ def selectAllAlunos():
 
 #--------------------------------------------
 
-#insertAluno({
-#    'password': "1234",
-#    'name': "Livia",
-#    'birthdate': "2025-11-02",
-#    'cpf': "12345678901",
-#    'email': "lili908@gmail.com",
-#    'course': "Informatica",
-#    'class': "3º"
-#})
+insertAluno({
+    'password': "1234",
+    'name': "Livia",
+    'birthdate': "2025-11-02",
+    'cpf': "12345678901",
+    'email': "lili908@gmail.com",
+    'course': "Informatica",
+    'class': "3º"
+})
