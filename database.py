@@ -68,8 +68,8 @@ class Alunos():
             'birthdate': aluno['birthdate'],
             'cpf': cipher.encrypt(aluno['cpf'].encode()).decode(),
             'email': aluno['email'],
-            'course': aluno.get('course'),  
-            'class': aluno.get('class')           
+            'course': aluno['course'],  
+            'class': aluno['class']        
         }).execute()
 
     @staticmethod
@@ -89,8 +89,8 @@ class Alunos():
                 'birthdate': aluno['birthdate'],
                 'cpf': cipher.decrypt(aluno['cpf'].encode()).decode(),
                 'email': aluno['email'],
-                'course': aluno.get('course'),
-                'class': aluno.get('class')
+                'course': aluno['course'],
+                'class': aluno['class']
             })
         return alunos
 
@@ -105,15 +105,6 @@ class Alunos():
 
 # #--------------------------------------------
 
-# Alunos.insert({
-#     'password': "1234",
-#     'name': "Livia",
-#     'birthdate': "2025-11-02",
-#     'cpf': "12345678901",
-#     'email': "lili908@gmail.com",
-#     'course': "Informatica",
-#     'class': "3"
-# })
 # print(Alunos.selectAll())
 # print("-----------------------------------------------------------------")
 # print(Professores.selectAll())
