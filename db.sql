@@ -43,7 +43,7 @@ create table professores (
     photo_url text,
     birthdate date not null,
     cpf text unique not null,
-    email text not null,
+    email text not null
 );
 
 create trigger trg_atualiza_professor
@@ -90,7 +90,3 @@ create trigger trg_atualiza_projeto
 before update on projetos
 for each row
 execute function atualizar_timestamp();
-
-
-
-
