@@ -106,5 +106,5 @@ class Alunos():
 # #--------------------------------------------
 
 # print(Alunos.selectAll())
-# print("-----------------------------------------------------------------")
+# print()
 # print(Professores.selectAll())

@@ -22,7 +22,7 @@ create table alunos (
     cpf text unique not null,
     email text not null,
     course text,
-    class varchar(2)
+    class Text
 );
 
 create trigger trg_atualiza_aluno
@@ -82,6 +82,7 @@ create table projetos (
     requirements text,
     description text,
     contact text,
+    vacancies int not null,
     constraint fk_projetos_professor
         foreign key (professor_id) references professores (id) on delete cascade
 );
