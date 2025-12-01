@@ -15,14 +15,15 @@
             <h2 class="title"><b>Faça Login</b></h2>
             <p class="subtitle">Acesse o ambiente de projetos e rede institucional.</p>
 
-            <form>
+            <form id="loginForm">  
 
                 <label for="email">E-mail</label>
-                <input type="email" name="email" id="email" placeholder="seu.nome@aluno.ifpi.edu.br">
+                <input type="email" name="email" id="email" placeholder="capau.matricula@aluno.ifpi.edu.br" required>
+                <span id="emailError" class="error"></span>
 
                 <label for="senha">Senha</label>
                 <div class="input-group">
-                    <input type="password" id="senha" name="senha" placeholder="Mínimo 6 caracteres">
+                    <input type="password" id="senha" name="senha" placeholder="Mínimo 8 caracteres" required>
                     <span class="eye">👁</span>
                 </div>
 
@@ -35,8 +36,7 @@
 
                 <input type="hidden" name="tipoUsuario" id="tipoUsuario" value="aluno">
 
-
-                <button type="submit" class="login-btn">Entrar</button>
+                <button type="button" class="login-btn" id="loginBtn">Entrar</button>
 
             </form>
 
