@@ -1,11 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>LinkedIF</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 </head>
-    <body>
-        <a href="{{ url_for('cadastro') }}"><button>Cadastrar</button></a>
-    </body>
+<body>
+    <div class="center">
+        <div class="container">
+
+            <h1 class="logo"><strong><span>Linked</span>IF</strong></h1>
+
+            <h2 class="title"><b>Faça Login</b></h2>
+            <p class="subtitle">Acesse o ambiente de projetos e rede institucional.</p>
+
+            <form>
+
+                <label for="email">E-mail</label>
+                <input type="email" name="email" id="email" placeholder="seu.nome@aluno.ifpi.edu.br">
+
+                <label for="senha">Senha</label>
+                <div class="input-group">
+                    <input type="password" id="senha" name="senha" placeholder="Mínimo 6 caracteres">
+                    <span class="eye">👁</span>
+                </div>
+
+                <label class="enter-as">Entrar Como:</label>
+
+                <div class="toggle">
+                    <button type="button" class="option active" id="alunoBtn">Aluno</button>
+                    <button type="button" class="option" id="profBtn">Professor</button>
+                </div>
+
+                <input type="hidden" name="tipoUsuario" id="tipoUsuario" value="aluno">
+
+
+                <button type="submit" class="login-btn">Entrar</button>
+
+            </form>
+
+            <p class="register">Novo no Linkedif? <a href="#">Crie sua conta</a></p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+</body>
 </html>
