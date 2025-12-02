@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>LinkedIF</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/cadastro.css') }}">
         <link rel="icon" href="{{ url_for('static', filename='img/icon.svg') }}" type="image/x-icon">
         <link rel="shortcut icon" href="{{ url_for('static', filename='img/icon.svg') }}" type="image/x-icon">
     </head>
@@ -16,14 +16,11 @@
 
                 <h2 class="title"><b>Cadastre-se</b></h2><br>
 
-                <form id="loginForm">  
+                <form id="cadastroAluno">  
 
                     <label for="nome">Nome</label>
                     <input type="text" name="nome" id="nome" placeholder="Nome completo" required>
 
-                    <label for="cpf">CPF</label>
-                    <input type="text" name="cpf" id="cpf" placeholder="000.000.000-00" required>
-                    
                     <label for="cpf">CPF</label>
                     <input type="text" name="cpf" id="cpf" placeholder="000.000.000-00" required>
 
@@ -39,17 +36,17 @@
                     </select>
 
                     <label for="email">E-mail</label>
-                    <input type="email" name="email" id="email" placeholder="capau.matricula@aluno.ifpi.edu.br" required>
+                    <input type="email" name="email" id="emailAluno" placeholder="capau.matricula@aluno.ifpi.edu.br" required>
 
                     <label for="senha">Senha</label>
                     <div class="input-group">
-                        <input type="password" id="senha" name="senha" placeholder="Mínimo 8 caracteres" required>
-                        <span class="eye">👁</span>
+                        <input type="password" id="senhaAluno" name="senha" placeholder="Mínimo 8 caracteres" required>
+                        <span class="eye" id="eyeAluno">👁</span>
                     </div>
 
-                    <span id="textError" class="error"></span>
+                    <button type="button" class="login-btn" id="cadastroAlunoBtn">Cadastrar</button>
 
-                    <button type="button" class="login-btn" id="loginBtn">Entrar</button>
+                    <span id="textErrorAluno" class="error"></span>
 
                 </form>
 
@@ -57,6 +54,6 @@
             </div>
         </div>
 
-        <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/cadastroAluno.js') }}"></script>
     </body>
 </html>

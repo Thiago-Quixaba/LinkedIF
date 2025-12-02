@@ -6,7 +6,7 @@ body {
     grid-template-rows: repeat(5, 1fr);
     grid-column-gap: 5px;
     grid-row-gap: 5px;
-    margin: 0;
+    margin: 10vh;
     background: rgb(14, 17, 23);
     font-family: 'Inter', sans-serif;
     display: flex;
@@ -16,6 +16,7 @@ body {
 }
 
 .left, .center, .right, .footer {
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -175,7 +176,53 @@ input {
     border: 2px solid rgb(255, 80, 80) !important;
 }
 
+/* Estilo para o select de turma */
+select {
+width: 96%;
+padding: 12px;
+border-radius: 8px;
+border: none;
+background: rgb(40, 45, 55);
+color: white;
+margin-bottom: 15px;
+font-size: 14px;
+cursor: pointer;
+appearance: none;
+-webkit-appearance: none;
+-moz-appearance: none;
+background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+background-repeat: no-repeat;
+background-position: right 12px center;
+background-size: 16px;
+padding-right: 36px;
+}
+
+/* Estilo para as opções do select */
+select option {
+background: rgb(40, 45, 55);
+color: white;
+padding: 10px;
+border: none;
+}
+
+/* Estilo para a primeira opção (desabilitada) */
+select option:disabled {
+color: rgb(150, 150, 150);
+font-style: italic;
+}
+
+/* Estilo para o select quando estiver em foco */
+select:focus {
+outline: 2px solid rgb(0, 200, 0);
+outline-offset: 1px;
+}
+
 input:focus {
 outline: 2px solid rgb(0, 200, 0);
 outline-offset: 1px;
+}
+
+/* Estilo para o hover nas opções (funciona em alguns navegadores) */
+select option:hover {
+background: rgb(60, 65, 75);
 }

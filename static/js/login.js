@@ -1,11 +1,11 @@
 const alunoBtn = document.getElementById("alunoBtn");
 const profBtn = document.getElementById("profBtn");
 const tipoUsuario = document.getElementById("tipoUsuario");
-const senhaInput = document.getElementById("senha");
-const eyeBtn = document.querySelector(".eye");
-const emailInput = document.getElementById("email");
+const senhaInput = document.getElementById("senhaLogin");
+const eyeBtn = document.getElementById("eyeLogin");
+const emailInput = document.getElementById("emailLogin");
 const loginForm = document.getElementById("loginForm");
-const textError = document.getElementById("textError");
+const textError = document.getElementById("textErrorLogin");
 const loginBtn = document.getElementById("loginBtn");
 const registerBtn = document.getElementById("registerBtn");
 

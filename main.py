@@ -22,4 +22,19 @@ def cadastro_aluno():
 def cadastro_professor():
     return flask.render_template("cadastro/professor.html")
 
+@app.route("/cadastrarAluno", methods=["POST"])
+def cadastrarAluno():
+    aluno = {
+        'name': flask.request.form.get("nome"),
+        'birthdate': flask.request.form.get("dataDeNascimento"), 
+        'cpf': flask.request.form.get("cpf"),
+        'email': flask.request.form.get("email"),
+        'class': flask.request.form.get("turma"),
+        'password': flask.request.form.get("senha")
+        }
+    
+    database.Alunos.insert(aluno)
+
+    return flask.redirect("/")
+
 app.run(debug=True)

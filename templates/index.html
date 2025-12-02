@@ -20,12 +20,12 @@
                 <form id="loginForm">  
 
                     <label for="email">E-mail</label>
-                    <input type="email" name="email" id="email" placeholder="capau.matricula@aluno.ifpi.edu.br" required>
+                    <input type="email" name="email" id="emailLogin" placeholder="capau.matricula@aluno.ifpi.edu.br" required>
 
                     <label for="senha">Senha</label>
                     <div class="input-group">
-                        <input type="password" id="senha" name="senha" placeholder="Mínimo 8 caracteres" required>
-                        <span class="eye">👁</span>
+                        <input type="password" id="senhaLogin" name="senha" placeholder="Mínimo 8 caracteres" required>
+                        <span class="eye" id="eyeLogin">👁</span>
                     </div>
 
                     <label class="enter-as">Entrar Como:</label>
@@ -38,7 +38,7 @@
                     <input type="hidden" name="tipoUsuario" id="tipoUsuario" value="aluno">
 
                     <button type="button" class="login-btn" id="loginBtn">Entrar</button>
-                    <span id="textError" class="error"></span>
+                    <span id="textErrorLogin" class="error"></span>
 
                 </form>
 
