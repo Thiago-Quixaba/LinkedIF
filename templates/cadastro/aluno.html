@@ -14,10 +14,29 @@
 
                 <h1 class="logo"><strong><span>Linked</span>IF</strong></h1>
 
-                <h2 class="title"><b>Faça Login</b></h2>
-                <p class="subtitle">Acesse o ambiente de projetos e rede institucional.</p>
+                <h2 class="title"><b>Cadastre-se</b></h2><br>
 
                 <form id="loginForm">  
+
+                    <label for="nome">Nome</label>
+                    <input type="text" name="nome" id="nome" placeholder="Nome completo" required>
+
+                    <label for="cpf">CPF</label>
+                    <input type="text" name="cpf" id="cpf" placeholder="000.000.000-00" required>
+                    
+                    <label for="cpf">CPF</label>
+                    <input type="text" name="cpf" id="cpf" placeholder="000.000.000-00" required>
+
+                    <label for="dataDeNascimento">Data de Nascimento</label>
+                    <input type="date" name="dataDeNascimento" id="dataDeNascimento" placeholder="000.000.000-00" required>
+
+                    <label for="turma">Turma:</label>
+                    <select id="turma" name="turma">
+                        <option value="" disabled selected>Selecione seu curso</option>
+                        <option value="1° INFO">1° Informática</option>
+                        <option value="2° INFO">2° Informática</option>
+                        <option value="3° INFO">3° Informática</option>
+                    </select>
 
                     <label for="email">E-mail</label>
                     <input type="email" name="email" id="email" placeholder="capau.matricula@aluno.ifpi.edu.br" required>
@@ -28,21 +47,13 @@
                         <span class="eye">👁</span>
                     </div>
 
-                    <label class="enter-as">Entrar Como:</label>
-
-                    <div class="toggle">
-                        <button type="button" class="option active" id="alunoBtn">Aluno</button>
-                        <button type="button" class="option" id="profBtn">Professor</button>
-                    </div>
-
-                    <input type="hidden" name="tipoUsuario" id="tipoUsuario" value="aluno">
+                    <span id="textError" class="error"></span>
 
                     <button type="button" class="login-btn" id="loginBtn">Entrar</button>
-                    <span id="textError" class="error"></span>
 
                 </form>
 
-                <p class="register">Novo no Linkedif? <a href="/cadastro/aluno" id="registerBtn">Crie sua conta</a></p>
+                <p class="register">Já tem uma conta? <a href="/" id="registerBtn">Faça login</a></p>
             </div>
         </div>
 

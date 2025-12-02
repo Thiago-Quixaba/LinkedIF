@@ -5,19 +5,22 @@ const senhaInput = document.getElementById("senha");
 const eyeBtn = document.querySelector(".eye");
 const emailInput = document.getElementById("email");
 const loginForm = document.getElementById("loginForm");
-const emailError = document.getElementById("emailError");
-const loginBtn = document.getElementById("loginBtn"); 
+const textError = document.getElementById("textError");
+const loginBtn = document.getElementById("loginBtn");
+const registerBtn = document.getElementById("registerBtn");
 
 alunoBtn.onclick = () => {
     alunoBtn.classList.add("active");
     profBtn.classList.remove("active");
     tipoUsuario.value = "aluno";
+    registerBtn.href = "/cadastro/aluno";
 };
 
 profBtn.onclick = () => {
     profBtn.classList.add("active");
     alunoBtn.classList.remove("active");
-    tipoUsuario.value = "professor"; 
+    tipoUsuario.value = "professor";
+    registerBtn.href = "/cadastro/professor";
 };
 
 eyeBtn.onclick = () => {
@@ -35,17 +38,17 @@ loginBtn.addEventListener("click", async () => {
     const regex = /^capau\.[a-zA-Z0-9]+@(aluno\.)?ifpi\.edu\.br$/;
 
     if (!regex.test(emailInput.value)) {
-        emailError.textContent = "Use um e-mail institucional do IFPI.";
+        textError.textContent = "Use um e-mail institucional do IFPI.";
         emailInput.classList.add("error-border");
         emailInput.focus(); 
         return; 
     } else {
-        emailError.textContent = "";
+        textError.textContent = "";
         emailInput.classList.remove("error-border");
     }
 
     if (senhaInput.value.length < 8) {
-        emailError.textContent = "A senha deve ter no mínimo 8 caracteres.";
+        textError.textContent = "A senha deve ter no mínimo 8 caracteres.";
         senhaInput.classList.add("error-border");
         senhaInput.focus();
         return;
@@ -62,12 +65,12 @@ loginBtn.addEventListener("click", async () => {
         });
         
         if (response.ok) {
-            window.location.href = '/dashboard';
+            textError.textContent = "OK.";
         } else {
-            emailError.textContent = "Credenciais inválidas. Tente novamente.";
+            textError.textContent = "Credenciais inválidas. Tente novamente.";
         }
     } catch (error) {
-        emailError.textContent = "Erro de conexão. Tente novamente.";
+        textError.textContent = "Erro de conexão. Tente novamente.";
     }
 });
 

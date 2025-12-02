@@ -21,7 +21,6 @@ create table alunos (
     birthdate date not null,
     cpf text unique not null,
     email text not null,
-    course text,
     class Text
 );
 
