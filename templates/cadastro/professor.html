@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>LinkedIF</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/cadastro.css') }}">
+        <link rel="icon" href="{{ url_for('static', filename='img/icon.svg') }}" type="image/x-icon">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='img/icon.svg') }}" type="image/x-icon">
+    </head>
+    <body>
+        <div class="center">
+            <div class="container">
+
+                <h1 class="logo"><strong><span>Linked</span>IF</strong></h1>
+
+                <h2 class="title"><b>Cadastre-se</b></h2><br>
+
+                <form id="cadastroProfessor">  
+
+                    <label for="nome">Nome</label>
+                    <input type="text" name="nome" id="nomeProfessor" placeholder="Nome completo" required>
+
+                    <label for="cpf">CPF</label>
+                    <input type="text" name="cpf" id="cpfProfessor" placeholder="000.000.000-00" required>
+
+                    <label for="dataDeNascimento">Data de Nascimento</label>
+                    <input type="date" name="dataDeNascimento" id="dataDeNascimentoProfessor" placeholder="000.000.000-00" required>
+
+                    <label for="email">E-mail</label>
+                    <input type="email" name="email" id="emailProfessor" placeholder="capau.matricula@ifpi.edu.br" required>
+
+                    <label for="senha">Senha</label>
+                    <div class="input-group">
+                        <input type="password" id="senhaProfessor" name="senha" placeholder="Mínimo 8 caracteres" required>
+                        <span class="eye" id="eyeProfessor">👁</span>
+                    </div>
+
+                    <button type="button" class="login-btn" id="cadastroProfessorBtn">Cadastrar</button>
+
+                    <span id="textErrorProfessor" class="error"></span>
+
+                </form>
+
+                <p class="register">Já tem uma conta? <a href="/" id="registerBtn">Faça login</a></p>
+            </div>
+        </div>
+
+        <script src="{{ url_for('static', filename='js/cadastroProfessor.js') }}"></script>
+    </body>
+</html>
