@@ -167,18 +167,28 @@ cadastroBtn.addEventListener("click", async () => {
     const formData = new FormData(cadastroForm);
     
     try {
+        textError.textContent = "Enviando dados...";
+        textError.style.color = "blue";
+        
         const response = await fetch('/cadastrarAluno', { 
             method: 'POST',
             body: formData
         });
         
         if (response.ok) {
-            textError.textContent = "OK.";
+            const html = await response.text();
+            
+            document.open();
+            document.write(html);
+            document.close();
+            
         } else {
-            textError.textContent = "Credenciais inválidas. Tente novamente.";
+            textError.textContent = "Erro no cadastro. Tente novamente.";
+            textError.style.color = "rgb(255, 80, 80)";
         }
     } catch (error) {
         textError.textContent = "Erro de conexão. Tente novamente.";
+        textError.style.color = "rgb(255, 80, 80)";
     }
 });
 

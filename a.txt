@@ -1,0 +1,457 @@
+/static/js/cadastroAluno.js:
+
+const senhaInput = document.getElementById("senhaAluno");
+const eyeBtn = document.getElementById("eyeAluno");
+const emailInput = document.getElementById("emailAluno");
+const textError = document.getElementById("textErrorAluno");
+const cadastroForm = document.getElementById("cadastroAluno"); 
+const cadastroBtn = document.getElementById("cadastroAlunoBtn"); 
+const loginLink = document.getElementById("registerBtn"); 
+const cpfInput = document.getElementById("cpf");
+const dataInput = document.getElementById("dataDeNascimento");
+
+// ============================
+// MÁSCARA DE CPF
+// ============================
+function aplicarMascaraCPF(input) {
+    let cpf = input.value.replace(/\D/g, "");
+
+    if (cpf.length > 11) cpf = cpf.substring(0, 11);
+
+    if (cpf.length > 9) {
+        input.value = `${cpf.substring(0,3)}.${cpf.substring(3,6)}.${cpf.substring(6,9)}-${cpf.substring(9,11)}`;
+    } else if (cpf.length > 6) {
+        input.value = `${cpf.substring(0,3)}.${cpf.substring(3,6)}.${cpf.substring(6,9)}`;
+    } else if (cpf.length > 3) {
+        input.value = `${cpf.substring(0,3)}.${cpf.substring(3,6)}`;
+    } else {
+        input.value = cpf;
+    }
+}
+
+cpfInput.addEventListener("input", () => aplicarMascaraCPF(cpfInput));
+
+
+// ============================
+// VALIDAÇÃO DE CPF
+// ============================
+function validarCPF(cpf) {
+    cpf = cpf.replace(/\D/g, ""); // remove máscara
+
+    if (cpf.length !== 11) return false;
+    if (/^(\d)\1+$/.test(cpf)) return false; // rejeita repetidos (111.111...)
+
+    let soma = 0;
+    let resto;
+
+    for (let i = 1; i <= 9; i++)
+        soma += parseInt(cpf[i - 1]) * (11 - i);
+
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf[9])) return false;
+
+    soma = 0;
+    for (let i = 1; i <= 10; i++)
+        soma += parseInt(cpf[i - 1]) * (12 - i);
+
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+
+    return resto === parseInt(cpf[10]);
+}
+
+
+// ============================
+// VALIDAÇÃO DE DATA (não pode ser futura)
+// ============================
+function dataNaoPodeSerFutura(data) {
+    const hoje = new Date();
+    const dataInformada = new Date(data);
+
+    return dataInformada <= hoje;
+}
+
+
+// ============================
+// MOSTRAR / ESCONDER SENHA
+// ============================
+eyeBtn.onclick = () => {
+    const isPassword = senhaInput.type === "password";
+    senhaInput.type = isPassword ? "text" : "password";
+};
+
+
+// ============================
+// VALIDAÇÃO DE EMAIL IFPI
+// ============================
+emailInput.addEventListener("blur", () => {
+    const regex = /^capau\.[a-zA-Z0-9]+@aluno\.ifpi\.edu\.br$/;
+
+    if (emailInput.value && !regex.test(emailInput.value)) {
+        textError.textContent = "Use um e-mail institucional do aluno IFPI (capau.matricula@aluno.ifpi.edu.br).";
+        emailInput.classList.add("error-border");
+    } else {
+        textError.textContent = "";
+        emailInput.classList.remove("error-border");
+    }
+});
+
+
+// ============================
+// SENHA MÍNIMA
+// ============================
+senhaInput.addEventListener("blur", () => {
+    if (senhaInput.value && senhaInput.value.length < 8) {
+        textError.textContent = "A senha deve ter no mínimo 8 caracteres.";
+        senhaInput.classList.add("error-border");
+    } else {
+        textError.textContent = "";
+        senhaInput.classList.remove("error-border");
+    }
+});
+
+
+// ============================
+// BOTÃO DE CADASTRAR
+// ============================
+cadastroBtn.addEventListener("click", async () => {
+    
+    const emailRegex = /^capau\.[a-zA-Z0-9]+@aluno\.ifpi\.edu\.br$/;
+
+    const nome = document.getElementById("nome").value;
+    const cpf = cpfInput.value;
+    const dataNascimento = dataInput.value;
+    const turma = document.getElementById("turma").value;
+
+    // EMAIL
+    if (!emailRegex.test(emailInput.value)) {
+        textError.textContent = "Use um e-mail institucional do aluno IFPI.";
+        emailInput.classList.add("error-border");
+        emailInput.focus();
+        return;
+    }
+
+    // SENHA
+    if (senhaInput.value.length < 8) {
+        textError.textContent = "A senha deve ter no mínimo 8 caracteres.";
+        senhaInput.classList.add("error-border");
+        senhaInput.focus();
+        return;
+    }
+
+    // CPF
+    if (!validarCPF(cpf)) {
+        textError.textContent = "CPF inválido.";
+        cpfInput.classList.add("error-border");
+        cpfInput.focus();
+        return;
+    } else {
+        cpfInput.classList.remove("error-border");
+    }
+
+    // DATA FUTURA
+    if (!dataNaoPodeSerFutura(dataNascimento)) {
+        textError.textContent = "A data de nascimento não pode ser no futuro.";
+        dataInput.classList.add("error-border");
+        dataInput.focus();
+        return;
+    } else {
+        dataInput.classList.remove("error-border");
+    }
+
+    // CAMPOS VAZIOS
+    if (!nome || !cpf || !dataNascimento || !turma) {
+        textError.textContent = "Preencha todos os campos obrigatórios.";
+        return;
+    }
+
+    const formData = new FormData(cadastroForm);
+    
+    try {
+        textError.textContent = "Enviando dados...";
+        textError.style.color = "blue";
+        
+        const response = await fetch('/cadastrarAluno', { 
+            method: 'POST',
+            body: formData
+        });
+        
+        if (response.ok) {
+            const html = await response.text();
+            
+            document.open();
+            document.write(html);
+            document.close();
+            
+        } else {
+            textError.textContent = "Erro no cadastro. Tente novamente.";
+            textError.style.color = "rgb(255, 80, 80)";
+        }
+    } catch (error) {
+        textError.textContent = "Erro de conexão. Tente novamente.";
+        textError.style.color = "rgb(255, 80, 80)";
+    }
+});
+
+
+// ============================
+// ENTER PARA PULAR CAMPOS
+// ============================
+emailInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        senhaInput.focus();
+    }
+});
+
+senhaInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        cadastroBtn.click();
+    }
+});
+
+
+// ============================
+// VOLTAR PARA LOGIN
+// ============================
+loginLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    window.location.href = "/";
+});
+
+
+
+
+
+/static/js/confirmar.js:
+
+const textErrorConfirmar = document.getElementById("textErrorConfirmar");
+const cadastroData = document.getElementById("cadastroData"); 
+const confirmarBtn = document.getElementById("confirmarBtn"); 
+
+confirmarBtn.addEventListener("click", async () => {
+    const formData = new FormData(cadastroData);
+    console.log('1')
+    try {
+        const response = await fetch('/confirmarEmail', { 
+            method: 'POST',
+            body: formData
+        });
+        console.log('2')
+
+        const data = await response.json();
+        console.log('3')
+
+        if (data.confirm) {
+            textErrorConfirmar.textContent = "Cadastrando...";
+            textErrorConfirmar.style.color = "rgb(0, 200, 0)";
+            window.location.href = "/";
+        } else {
+            textErrorConfirmar.textContent = "Codigo Invalido!";
+            textErrorConfirmar.style.color = "rgb(255, 80, 80)";
+            window.location.href = "/";
+        }
+    } catch (error) {
+        textErrorConfirmar.textContent = "Erro de conexão. Tente novamente.";
+        textErrorConfirmar.style.color = "rgb(255, 80, 80)";
+    }
+    console.log('4')
+});
+
+
+
+
+
+templates/cadastro/aluno.html:
+
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>LinkedIF</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/cadastro.css') }}">
+        <link rel="icon" href="{{ url_for('static', filename='img/icon.svg') }}" type="image/x-icon">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='img/icon.svg') }}" type="image/x-icon">
+    </head>
+    <body>
+        <div class="center">
+            <div class="container">
+
+                <h1 class="logo"><strong><span>Linked</span>IF</strong></h1>
+
+                <h2 class="title"><b>Cadastre-se</b></h2><br>
+
+                <form id="cadastroAluno">  
+
+                    <label for="nome">Nome</label>
+                    <input type="text" name="nome" id="nome" placeholder="Nome completo" required>
+
+                    <label for="cpf">CPF</label>
+                    <input type="text" name="cpf" id="cpf" placeholder="000.000.000-00" required>
+
+                    <label for="dataDeNascimento">Data de Nascimento</label>
+                    <input type="date" name="dataDeNascimento" id="dataDeNascimento" placeholder="000.000.000-00" required>
+
+                    <label for="turma">Turma:</label>
+                    <select id="turma" name="turma">
+                        <option value="" disabled selected>Selecione seu curso</option>
+                        <option value="1° INFO">1° Informática</option>
+                        <option value="2° INFO">2° Informática</option>
+                        <option value="3° INFO">3° Informática</option>
+                    </select>
+
+                    <label for="email">E-mail</label>
+                    <input type="email" name="email" id="emailAluno" placeholder="capau.matricula@aluno.ifpi.edu.br" required>
+
+                    <label for="senha">Senha</label>
+                    <div class="input-group">
+                        <input type="password" id="senhaAluno" name="senha" placeholder="Mínimo 8 caracteres" required>
+                        <span class="eye" id="eyeAluno">👁</span>
+                    </div>
+
+                    <button type="button" class="login-btn" id="cadastroAlunoBtn">Cadastrar</button>
+
+                    <span id="textErrorAluno" class="error"></span>
+
+                </form>
+
+                <p class="register">Já tem uma conta? <a href="/" id="registerBtn">Faça login</a></p>
+            </div>
+        </div>
+
+        <script src="{{ url_for('static', filename='js/cadastroAluno.js') }}"></script>
+    </body>
+</html>
+
+
+
+
+
+templates/cadastro/confirmar.html:
+
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>LinkedIF</title>
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+        <link rel="icon" href="{{ url_for('static', filename='img/icon.svg') }}" type="image/x-icon">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='img/icon.svg') }}" type="image/x-icon">
+    </head>
+
+    <body>
+        <div class="center">
+            <div class="container">
+
+                <div class="logo">Linked<span>IF</span></div>
+
+                <p class="subtitle">Enviamos um código de verificação para <b>{{ aluno.email }}</b></p>
+
+                <form id="cadastroData">
+
+                    <label for="codigo">Código de verificação</label>
+                    <input type="text" id="codigo" name="codigo" placeholder="Digite o código" required>
+
+                    <input type="hidden" name="name" value="{{ aluno.name }}">
+                    <input type="hidden" name="birthdate" value="{{ aluno.birthdate }}">
+                    <input type="hidden" name="cpf" value="{{ aluno.cpf }}">
+                    <input type="hidden" name="email" value="{{ aluno.email }}">
+                    <input type="hidden" name="class" value="{{ aluno.class }}">
+                    <input type="hidden" name="password" value="{{ aluno.password }}">
+
+                    <button type="button" class="login-btn" id="confirmarBtn">confirmar</button>
+                    <span id="textErrorConfirmar" class="error"></span>
+                </form>
+
+            </div>
+        </div>
+        <script src="{{ url_for('static', filename='js/confirmar.js') }}"></script>
+    </body>
+</html>
+
+
+
+
+
+
+main.py:
+
+import flask, database
+
+app = flask.Flask(__name__)
+
+@app.route("/")
+def home():
+    return flask.render_template("index.html")
+
+@app.route('/login', methods=['POST'])
+def login():
+    email = flask.request.form.get('email')
+    senha = flask.request.form.get('senha')
+    tipo_usuario = flask.request.form.get('tipoUsuario')
+    return "OK", 200
+
+@app.route("/cadastro/aluno")
+def cadastro_aluno():
+    return flask.render_template("cadastro/aluno.html")
+
+@app.route("/cadastro/professor")
+def cadastro_professor():
+    return flask.render_template("cadastro/professor.html")
+
+from flask import render_template
+
+@app.route("/cadastrarAluno", methods=["POST"])
+def cadastrarAluno():
+    aluno = {
+        'name': flask.request.form.get("nome"),
+        'birthdate': flask.request.form.get("dataDeNascimento"), 
+        'cpf': flask.request.form.get("cpf"),
+        'email': flask.request.form.get("email"),
+        'class': flask.request.form.get("turma"),
+        'password': flask.request.form.get("senha")
+    }
+
+    return render_template("cadastro/confirmar.html", aluno=aluno)
+
+@app.route("/cadastrarProfessor", methods=["POST"])
+def cadastrarProfessor():
+    professor = {
+        'name': flask.request.form.get("nome"),
+        'birthdate': flask.request.form.get("dataDeNascimento"), 
+        'cpf': flask.request.form.get("cpf"),
+        'email': flask.request.form.get("email"),
+        'password': flask.request.form.get("senha")
+    }
+    
+    database.Professores.insert(professor)
+    return flask.redirect("/")
+
+@app.route("/confirmarEmail", methods=["POST"])
+def confirmarEmail():
+    codigo = flask.request.form.get("codigo")
+
+    aluno = {
+        'name': flask.request.form.get("name"),
+        'birthdate': flask.request.form.get("birthdate"), 
+        'cpf': flask.request.form.get("cpf"),
+        'email': flask.request.form.get("email"),
+        'class': flask.request.form.get("class"),
+        'password': flask.request.form.get("password")
+    }
+
+    print("Código digitado:", codigo)
+    print("Dados recebidos:", aluno)
+
+    if codigo == "123456":
+        return flask.jsonify({"confirm": True})
+    else:
+        return flask.jsonify({"confirm": False})
+
+if __name__ == "__main__":
+    app.run(debug=True)
