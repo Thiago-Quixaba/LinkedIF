@@ -1,7 +1,16 @@
+# ======================================
+# IMPORTS DE BIBLIOTECAS E MODULOS: 
+# ======================================
+
 import flask, database, random
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
 import os
+
+
+# ======================================
+# CONFIGURAÇÃO DO APP: 
+# ======================================
 
 app = flask.Flask(__name__)
 load_dotenv()
@@ -15,17 +24,17 @@ app.config["MAIL_PASSWORD"] = "hjgm wmgz ueuf xnvj "
 
 mail = Mail(app)
 
+
+# ======================================
+# ROTAS DE PÁGINAS: 
+# ======================================
+
+# --- Rota de Login ---
 @app.route("/")
 def home():
     return flask.render_template("index.html")
 
-@app.route('/login', methods=['POST'])
-def login():
-    email = flask.request.form.get('email')
-    senha = flask.request.form.get('senha')
-    tipo_usuario = flask.request.form.get('tipoUsuario')
-    return "OK", 200
-
+# --- Rotas de Cadastro ---
 @app.route("/cadastro/aluno")
 def cadastro_aluno():
     return flask.render_template("cadastro/aluno/aluno.html")
@@ -34,10 +43,17 @@ def cadastro_aluno():
 def cadastro_professor():
     return flask.render_template("cadastro/professor/professor.html")
 
+
+# ======================================
+# FUNÇÕES DE UTILIDADE: 
+# ======================================
+
 def gerarCodigo(tamanho=6):
+    """Gera um código numérico simples para verificação por e-mail."""
     return ''.join(str(random.randint(0, 9)) for i in range(tamanho))
 
 def enviarCodigo(context: dict):
+    """Envia um código de verificação para o e-mail do usuário."""
     msg = Message(
         subject="Código de verificação",
         sender=app.config["MAIL_USERNAME"],
@@ -54,6 +70,20 @@ def enviarCodigo(context: dict):
 
     mail.send(msg)
 
+
+# ======================================
+# ROTAS DE AÇÕES: 
+# ======================================
+
+# --- Rotas de Login ---
+@app.route('/login', methods=['POST'])
+def login():
+    email = flask.request.form.get('email')
+    senha = flask.request.form.get('senha')
+    tipo_usuario = flask.request.form.get('tipoUsuario')
+    return "OK", 200
+
+# --- Rotas de Cadastro ---
 @app.route("/cadastrarAluno", methods=["POST"])
 def cadastrarAluno():
     aluno = {
@@ -110,6 +140,11 @@ def confirmarEmailProfessor():
         return flask.jsonify({"confirm": True})
     else:
         return flask.jsonify({"confirm": False})
+
+
+# ======================================
+# RUN APP:
+# ======================================
 
 if __name__ == "__main__":
     app.run(debug=True)
