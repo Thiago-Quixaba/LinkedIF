@@ -61,11 +61,55 @@ def enviarCodigo(context: dict):
     )
 
     msg.html = f"""
-        <p>Seu código de verificação é:</p>
-        <h2 style="font-size: 28px; font-weight: bold; color: #000;">
-            {context['codigo']}
-        </h2>
-        <p>Use-o para concluir seu cadastro.</p>
+    <div style="width:100%; background-color:#f2f2f2; padding:30px 0; font-family:Arial, sans-serif;">
+
+        <div style="
+            max-width:420px;
+            margin:0 auto;
+            background:#ffffff;
+            padding:25px 30px;
+            border-radius:10px;
+            box-shadow:0 2px 8px rgba(0,0,0,0.1);
+        ">
+
+            <h2 style="
+                margin:0 0 15px 0;
+                font-size:22px;
+                color:rgb(0,120,0);
+                font-weight:bold;
+                text-align:center;
+            ">
+                Confirmação de Cadastro
+            </h2>
+
+            <p style="font-size:15px; color:#333; text-align:center;">
+                Seu código de verificação está abaixo:
+            </p>
+
+            <div style="
+                margin:20px auto;
+                width:fit-content;
+                background:rgb(230, 255, 230);
+                border:2px solid rgb(0,120,0);
+                border-radius:8px;
+                padding:12px 20px;
+            ">
+                <span style="font-size:28px; color:#000; font-weight:bold; letter-spacing:2px;">
+                    {context['codigo']}
+                </span>
+            </div>
+
+            <p style="font-size:14px; color:#555; text-align:center;">
+                Insira este código na página para concluir seu cadastro.
+            </p>
+
+            <p style="font-size:12px; color:#888; text-align:center; margin-top:25px;">
+                Caso você não tenha solicitado essa verificação, apenas ignore este e-mail.
+            </p>
+
+        </div>
+
+    </div>
     """
 
     mail.send(msg)
