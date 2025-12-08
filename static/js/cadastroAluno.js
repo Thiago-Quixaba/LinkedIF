@@ -88,6 +88,7 @@ emailInput.addEventListener("blur", () => {
 
     if (emailInput.value && !regex.test(emailInput.value)) {
         textError.textContent = "Use um e-mail institucional do aluno IFPI (capau.matricula@aluno.ifpi.edu.br).";
+        textError.style.color = "rgb(255, 80, 80)";
         emailInput.classList.add("error-border");
     } else {
         textError.textContent = "";
@@ -102,6 +103,7 @@ emailInput.addEventListener("blur", () => {
 senhaInput.addEventListener("blur", () => {
     if (senhaInput.value && senhaInput.value.length < 8) {
         textError.textContent = "A senha deve ter no mínimo 8 caracteres.";
+        textError.style.color = "rgb(255, 80, 80)";
         senhaInput.classList.add("error-border");
     } else {
         textError.textContent = "";
@@ -125,6 +127,7 @@ cadastroBtn.addEventListener("click", async () => {
     // EMAIL
     if (!emailRegex.test(emailInput.value)) {
         textError.textContent = "Use um e-mail institucional do aluno IFPI.";
+        textError.style.color = "rgb(255, 80, 80)";
         emailInput.classList.add("error-border");
         emailInput.focus();
         return;
@@ -133,6 +136,7 @@ cadastroBtn.addEventListener("click", async () => {
     // SENHA
     if (senhaInput.value.length < 8) {
         textError.textContent = "A senha deve ter no mínimo 8 caracteres.";
+        textError.style.color = "rgb(255, 80, 80)";
         senhaInput.classList.add("error-border");
         senhaInput.focus();
         return;
@@ -141,6 +145,7 @@ cadastroBtn.addEventListener("click", async () => {
     // CPF
     if (!validarCPF(cpf)) {
         textError.textContent = "CPF inválido.";
+        textError.style.color = "rgb(255, 80, 80)";
         cpfInput.classList.add("error-border");
         cpfInput.focus();
         return;
@@ -151,6 +156,7 @@ cadastroBtn.addEventListener("click", async () => {
     // DATA FUTURA
     if (!dataNaoPodeSerFutura(dataNascimento)) {
         textError.textContent = "A data de nascimento não pode ser no futuro.";
+        textError.style.color = "rgb(255, 80, 80)";
         dataInput.classList.add("error-border");
         dataInput.focus();
         return;
@@ -161,6 +167,7 @@ cadastroBtn.addEventListener("click", async () => {
     // CAMPOS VAZIOS
     if (!nome || !cpf || !dataNascimento || !turma) {
         textError.textContent = "Preencha todos os campos obrigatórios.";
+        textError.style.color = "rgb(255, 80, 80)";
         return;
     }
 
@@ -168,7 +175,7 @@ cadastroBtn.addEventListener("click", async () => {
     
     try {
         textError.textContent = "Enviando dados...";
-        textError.style.color = "blue";
+        textError.style.color = "rgb(0, 200, 0)";
         
         const response = await fetch('/cadastrarAluno', { 
             method: 'POST',

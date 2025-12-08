@@ -32,7 +32,7 @@ def cadastro_aluno():
 
 @app.route("/cadastro/professor")
 def cadastro_professor():
-    return flask.render_template("cadastro/professor.html")
+    return flask.render_template("cadastro/professor/professor.html")
 
 def gerarCodigo(tamanho=6):
     return ''.join(str(random.randint(0, 9)) for i in range(tamanho))
@@ -92,9 +92,24 @@ def cadastrarProfessor():
         'email': flask.request.form.get("email"),
         'password': flask.request.form.get("senha")
     }
-    
-    database.Professores.insert(professor)
-    return flask.redirect("/")
+    codigo = gerarCodigo()
+    flask.session["codigo_verificacao"] = codigo
+    flask.session["professor_temp"] = professor
+
+    enviarCodigo(context = {'email': professor['email'], 'codigo': codigo})
+    return flask.render_template("cadastro/professor/confirmar.html", professor=professor)
+
+@app.route("/confirmarEmailProfessor", methods=["POST"])
+def confirmarEmailProfessor():
+    codigo = flask.request.form.get("codigo")
+
+    professor = flask.session.get("professor_temp")
+
+    if codigo == flask.session.get("codigo_verificacao"):
+        database.Professores.insert(professor)
+        return flask.jsonify({"confirm": True})
+    else:
+        return flask.jsonify({"confirm": False})
 
 if __name__ == "__main__":
     app.run(debug=True)
