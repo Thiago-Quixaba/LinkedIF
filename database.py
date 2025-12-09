@@ -1,9 +1,9 @@
 from cryptography.fernet import Fernet
-from supabase import create_client, Client
+from supabase import create_client
 # from dotenv import load_dotenv
 import os
 
-supabase: Client = None
+supabase = None
 master_cipher: Fernet = None
 
 def init_globals():
