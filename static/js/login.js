@@ -12,14 +12,14 @@ const registerBtn = document.getElementById("registerBtn");
 alunoBtn.onclick = () => {
     alunoBtn.classList.add("active");
     profBtn.classList.remove("active");
-    tipoUsuario.value = "alunos";
+    tipoUsuario.value = "aluno";
     registerBtn.href = "/cadastro/aluno";
 };
 
 profBtn.onclick = () => {
     profBtn.classList.add("active");
     alunoBtn.classList.remove("active");
-    tipoUsuario.value = "professores";
+    tipoUsuario.value = "professor";
     registerBtn.href = "/cadastro/professor";
 };
 
@@ -35,7 +35,7 @@ loginForm.addEventListener("submit", (event) => {
 
 loginBtn.addEventListener("click", async () => {
 
-    const regex = /^capau\.[a-zA-Z0-9]+@(aluno\.)?ifpi\.edu\.br$/;
+    const regex = /^(capau\.)?[a-zA-Z0-9]+@(aluno\.)?ifpi\.edu\.br$/;
 
     if (!regex.test(emailInput.value)) {
         textError.textContent = "Use um e-mail institucional do IFPI.";
@@ -63,14 +63,40 @@ loginBtn.addEventListener("click", async () => {
             method: 'POST',
             body: formData
         });
-        
-        if (response.ok) {
-            textError.textContent = "OK.";
-        } else {
-            textError.textContent = "Credenciais inválidas. Tente novamente.";
+
+        const data = await response.json();
+
+        switch (response.status) {
+
+            case 200:
+                window.location.href = "/embreve";
+                break;
+
+            case 401:
+                textError.textContent = data.body;
+                textError.style.color = "rgb(255, 80, 80)";
+                senhaInput.classList.add("error-border");
+                break;
+
+            case 404:
+                textError.textContent = data.body;
+                textError.style.color = "rgb(255, 80, 80)";
+                emailInput.classList.add("error-border");
+                break;
+
+            case 500:
+                textError.textContent = data.body;
+                textError.style.color = "rgb(255, 80, 80)";
+                break;
+
+            default:
+                textError.textContent = "Erro desconhecido.";
+                textError.style.color = "rgb(255, 80, 80)";
         }
-    } catch (error) {
-        textError.textContent = "Erro de conexão. Tente novamente.";
+
+    } catch {
+        textError.textContent = "Falha de conexão.";
+        textError.style.color = "rgb(255, 80, 80)";
     }
 });
 

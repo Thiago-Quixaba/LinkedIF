@@ -29,19 +29,17 @@ class Professores():
             'email': professor['email']
         }).execute()
 
-    def search(professor: dict):
+    def search(email: str):
         try:
-            res = supabase.table('professores').select('*').eq("email", professor['email']).execute()
+            res = supabase.table('professores').select('*').eq("email", email).execute()
         except:
             return {
-                'success': False,
                 'status': 500,
                 'body': "Erro ao consultar o banco de dados."
             }
         
         if not res.data:
             return {
-                'success': False,
                 'status': 404,
                 'body': "Usuário não encontrado."
             }
@@ -52,7 +50,6 @@ class Professores():
         cipher = Fernet(decrypted_key)
 
         return {
-            'success': True,
             'status': 200,
             'body': {
                 'id': row['id'],
@@ -92,19 +89,17 @@ class Alunos():
             'class': aluno['class']        
         }).execute()
 
-    def search(aluno: dict):
+    def search(email: str):
         try:
-            res = supabase.table('alunos').select('*').eq("email", aluno['email']).execute()
+            res = supabase.table('alunos').select('*').eq("email", email).execute()
         except:
             return {
-                'success': False,
                 'status': 500,
                 'body': "Erro ao consultar o banco de dados."
             }
         
         if not res.data:
             return {
-                'success': False,
                 'status': 404,
                 'body': "Usuário não encontrado."
             }
@@ -115,7 +110,6 @@ class Alunos():
         cipher = Fernet(decrypted_key)
 
         return {
-            'success': True,
             'status': 200,
             'body': {
                 'id': row['id'],
