@@ -34,6 +34,7 @@ class Professores():
             'email': professor['email']
         }).execute()
 
+    @staticmethod
     def search(email: str):
         try:
             res = supabase.table('professores').select('*').eq("email", email).execute()
@@ -94,6 +95,7 @@ class Alunos():
             'class': aluno['class']        
         }).execute()
 
+    @staticmethod
     def search(email: str):
         try:
             res = supabase.table('alunos').select('*').eq("email", email).execute()

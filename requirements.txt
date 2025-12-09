@@ -1,8 +1,8 @@
-Flask==3.1.2
+Flask==2.3.3
 Flask-Mail==0.10.0
-python-dotenv==1.1.1
-cryptography==46.0.1
-supabase==2.20.0
-supabase-auth==2.25.0
-httpx>=0.28.1
+python-dotenv==1.0.1
+cryptography==41.0.3
+supabase==2.6.0
+supabase-auth==2.6.0
+httpx==0.24.1
 gunicorn==21.2.0
