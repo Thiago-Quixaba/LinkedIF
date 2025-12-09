@@ -9,7 +9,7 @@ master_cipher: Fernet = None
 def init_globals():
     """Inicializa as variáveis globais supabase e master_cipher."""
     global supabase, master_cipher
-    supabase = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_KEY'), options={"auto_refresh_token": True, "persist_session": True, "proxy": None})
+    supabase = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_KEY'))
     master_cipher = Fernet(os.getenv('MASTER_KEY').encode())
 
 class Professores():
