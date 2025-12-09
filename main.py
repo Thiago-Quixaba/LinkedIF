@@ -14,6 +14,7 @@ import os
 
 app = flask.Flask(__name__)
 load_dotenv()
+database.init_globals()
 
 app.secret_key = os.getenv('SECRET_KEY')
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
@@ -22,6 +23,7 @@ app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = 'linkedifpi@gmail.com'
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 
+global mail 
 mail = Mail(app)
 
 
@@ -213,5 +215,4 @@ def confirmarEmailProfessor():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    
     app.run(host='0.0.0.0', port=port, debug=False)
