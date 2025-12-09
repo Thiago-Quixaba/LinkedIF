@@ -2,18 +2,18 @@
 # IMPORTS DE BIBLIOTECAS E MODULOS: 
 # ======================================
 
-import flask, database, random
+import flask, random
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
 import os
-
+load_dotenv()
+import database
 
 # ======================================
 # CONFIGURAÇÃO DO APP: 
 # ======================================
 
 app = flask.Flask(__name__)
-load_dotenv()
 
 app.secret_key = os.getenv('SECRET_KEY')
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
