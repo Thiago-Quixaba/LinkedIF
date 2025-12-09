@@ -4,7 +4,7 @@
 
 import flask, database, random
 from flask_mail import Mail, Message
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import os
 
 
@@ -13,7 +13,7 @@ import os
 # ======================================
 
 app = flask.Flask(__name__)
-load_dotenv()
+# load_dotenv()
 database.init_globals()
 
 app.secret_key = os.getenv('SECRET_KEY')
