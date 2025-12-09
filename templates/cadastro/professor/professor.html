@@ -19,20 +19,20 @@
                 <form id="cadastroProfessor">  
 
                     <label for="nome">Nome</label>
-                    <input type="text" name="nome" id="nomeProfessor" placeholder="Nome completo" required>
+                    <input type="text" name="nome" id="nomeProfessor" placeholder="Nome completo" value="{{ session.get('professor_temp', {}).get('name', '') }}" required>
 
                     <label for="cpf">CPF</label>
-                    <input type="text" name="cpf" id="cpfProfessor" placeholder="000.000.000-00" required>
+                    <input type="text" name="cpf" id="cpfProfessor" placeholder="000.000.000-00" value="{{ session.get('professor_temp', {}).get('cpf', '') }}" required>
 
                     <label for="dataDeNascimento">Data de Nascimento</label>
-                    <input type="date" name="dataDeNascimento" id="dataDeNascimentoProfessor" placeholder="000.000.000-00" required>
+                    <input type="date" name="dataDeNascimento" id="dataDeNascimentoProfessor" value="{{ session.get('professor_temp', {}).get('birthdate', '') }}" placeholder="000.000.000-00" required>
 
                     <label for="email">E-mail</label>
-                    <input type="email" name="email" id="emailProfessor" placeholder="capau.matricula@ifpi.edu.br" required>
+                    <input type="email" name="email" id="emailProfessor" placeholder="capau.matricula@ifpi.edu.br" value="{{ session.get('professor_temp', {}).get('email', '') }}" required>
 
                     <label for="senha">Senha</label>
                     <div class="input-group">
-                        <input type="password" id="senhaProfessor" name="senha" placeholder="Mínimo 8 caracteres" required>
+                        <input type="password" id="senhaProfessor" name="senha" placeholder="Mínimo 8 caracteres" value="{{ session.get('professor_temp', {}).get('password', '') }}" required>
                         <span class="eye" id="eyeProfessor">👁</span>
                     </div>
 
