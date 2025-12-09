@@ -20,7 +20,7 @@ create table alunos (
     photo_url text,
     birthdate date not null,
     cpf text unique not null,
-    email text not null,
+    email text unique not null,
     class Text
 );
 
@@ -42,7 +42,7 @@ create table professores (
     photo_url text,
     birthdate date not null,
     cpf text unique not null,
-    email text not null
+    email text unique not null
 );
 
 create trigger trg_atualiza_professor

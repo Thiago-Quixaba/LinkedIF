@@ -122,10 +122,13 @@ def enviarCodigo(context: dict):
 # --- Rotas de Login ---
 @app.route('/login', methods=['POST'])
 def login():
-    email = flask.request.form.get('email')
-    senha = flask.request.form.get('senha')
-    tipo_usuario = flask.request.form.get('tipoUsuario')
-    return "OK", 200
+    tipoUsuario = flask.request.form.get('tipoUsuario')
+    user = {
+        'email': flask.request.form.get('email'),
+        'senha': flask.request.form.get('senha'),
+    }
+
+
 
 # --- Rotas de Cadastro ---
 @app.route("/cadastrarAluno", methods=["POST"])

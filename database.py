@@ -29,25 +29,45 @@ class Professores():
             'email': professor['email']
         }).execute()
 
+    def search(professor: dict):
+        try:
+            res = supabase.table('professores').select('*').eq("email", professor['email']).execute()
+        except:
+            return {
+                'success': False,
+                'status': 500,
+                'body': "Erro ao consultar o banco de dados."
+            }
+        
+        if not res.data:
+            return {
+                'success': False,
+                'status': 404,
+                'body': "Usuário não encontrado."
+            }
+        
+        row = res.data[0]
+        
+        decrypted_key = master_cipher.decrypt(row['encryption_key'].encode()).decode()
+        cipher = Fernet(decrypted_key)
 
-    @staticmethod
-    def selectAll():
-        professores = []
-        for professor in supabase.table('professores').select('*').execute().data:
-            cipher = Fernet(master_cipher.decrypt(professor['encryption_key'].encode()).decode())
-            if professor['photo_url']:
-                decrypted_photo = cipher.decrypt(professor['photo_url'].encode()).decode()
-            else:
-                decrypted_photo = None
-            professores.append({'id': professor['id'], 
-                                'password': cipher.decrypt(professor['password'].encode()).decode(),
-                                'name': professor['name'],
-                                'photo_url': decrypted_photo,
-                                'birthdate': professor['birthdate'],
-                                'cpf': cipher.decrypt(professor['cpf'].encode()).decode(),
-                                'email': professor['email']
-                                })
-        return(professores)
+        return {
+            'success': True,
+            'status': 200,
+            'body': {
+                'id': row['id'],
+                'encryption_key': row['encryption_key'],
+                'email': row['email'],
+                'password': cipher.decrypt(row['password'].encode()).decode(),
+                'created_at': row['created_at'],
+                'updated_at': row['updated_at'],
+                'name': row['name'],
+                'birthdate': row['birthdate'],
+                'cpf': cipher.decrypt(row['cpf'].encode()).decode()
+            }
+        }
+
+
 
 class Alunos():
     @staticmethod
@@ -72,23 +92,41 @@ class Alunos():
             'class': aluno['class']        
         }).execute()
 
-    @staticmethod
-    def selectAll():
-        alunos = []
-        for aluno in supabase.table('alunos').select('*').execute().data:
-            cipher = Fernet(master_cipher.decrypt(aluno['encryption_key'].encode()).decode())
-            if aluno['photo_url']:
-                decrypted_photo = cipher.decrypt(aluno['photo_url'].encode()).decode()
-            else:
-                decrypted_photo = None
-            alunos.append({
-                'id': aluno['id'],
-                'password': cipher.decrypt(aluno['password'].encode()).decode(),
-                'name': aluno['name'],
-                'photo_url': decrypted_photo,
-                'birthdate': aluno['birthdate'],
-                'cpf': cipher.decrypt(aluno['cpf'].encode()).decode(),
-                'email': aluno['email'],
-                'class': aluno['class']
-            })
-        return alunos
+    def search(aluno: dict):
+        try:
+            res = supabase.table('alunos').select('*').eq("email", aluno['email']).execute()
+        except:
+            return {
+                'success': False,
+                'status': 500,
+                'body': "Erro ao consultar o banco de dados."
+            }
+        
+        if not res.data:
+            return {
+                'success': False,
+                'status': 404,
+                'body': "Usuário não encontrado."
+            }
+        
+        row = res.data[0]
+        
+        decrypted_key = master_cipher.decrypt(row['encryption_key'].encode()).decode()
+        cipher = Fernet(decrypted_key)
+
+        return {
+            'success': True,
+            'status': 200,
+            'body': {
+                'id': row['id'],
+                'encryption_key': row['encryption_key'],
+                'email': row['email'],
+                'password': cipher.decrypt(row['password'].encode()).decode(),
+                'created_at': row['created_at'],
+                'updated_at': row['updated_at'],
+                'name': row['name'],
+                'birthdate': row['birthdate'],
+                'cpf': cipher.decrypt(row['cpf'].encode()).decode(),
+                'class': row['class']
+            }
+        }

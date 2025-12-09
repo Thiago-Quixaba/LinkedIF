@@ -12,14 +12,14 @@ const registerBtn = document.getElementById("registerBtn");
 alunoBtn.onclick = () => {
     alunoBtn.classList.add("active");
     profBtn.classList.remove("active");
-    tipoUsuario.value = "aluno";
+    tipoUsuario.value = "alunos";
     registerBtn.href = "/cadastro/aluno";
 };
 
 profBtn.onclick = () => {
     profBtn.classList.add("active");
     alunoBtn.classList.remove("active");
-    tipoUsuario.value = "professor";
+    tipoUsuario.value = "professores";
     registerBtn.href = "/cadastro/professor";
 };
 
