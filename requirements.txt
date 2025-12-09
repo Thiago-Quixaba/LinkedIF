@@ -3,5 +3,5 @@ Flask-Mail==0.9.1
 python-dotenv==1.0.0
 cryptography==41.0.7
 supabase==2.4.0
-httpx>=0.24,<0.25
+httpx>=0.25,<0.28
 gunicorn==21.2.0
