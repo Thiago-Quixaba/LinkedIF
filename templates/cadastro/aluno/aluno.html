@@ -19,28 +19,41 @@
                 <form id="cadastroAluno">  
 
                     <label for="nome">Nome</label>
-                    <input type="text" name="nome" id="nome" placeholder="Nome completo" required>
+                    <input type="text" name="nome" id="nome" placeholder="Nome completo" value="{{ session['aluno_temp']['name'] }}" required>
 
                     <label for="cpf">CPF</label>
-                    <input type="text" name="cpf" id="cpf" placeholder="000.000.000-00" required>
+                    <input type="text" name="cpf" id="cpf" placeholder="000.000.000-00" value="{{ session['aluno_temp']['cpf'] }}" required>
 
                     <label for="dataDeNascimento">Data de Nascimento</label>
-                    <input type="date" name="dataDeNascimento" id="dataDeNascimento" placeholder="000.000.000-00" required>
+                    <input type="date" name="dataDeNascimento" id="dataDeNascimento" value="{{ session['aluno_temp']['birthdate'] }}" placeholder="000.000.000-00" required>
 
                     <label for="turma">Turma:</label>
-                    <select id="turma" name="turma">
-                        <option value="" disabled selected>Selecione seu curso</option>
-                        <option value="1° INFO">1° Informática</option>
-                        <option value="2° INFO">2° Informática</option>
-                        <option value="3° INFO">3° Informática</option>
+                    <select id="turma" name="turma" required>
+                        <option value="" disabled>Selecione seu curso</option>
+
+                        <option value="1° INFO"
+                            {% if session['aluno_temp']['class'] == "1° INFO" %}selected{% endif %}>
+                            1° Informática
+                        </option>
+
+                        <option value="2° INFO"
+                            {% if session['aluno_temp']['class'] == "2° INFO" %}selected{% endif %}>
+                            2° Informática
+                        </option>
+
+                        <option value="3° INFO"
+                            {% if session['aluno_temp']['class'] == "3° INFO" %}selected{% endif %}>
+                            3° Informática
+                        </option>
                     </select>
 
+
                     <label for="email">E-mail</label>
-                    <input type="email" name="email" id="emailAluno" placeholder="capau.matricula@aluno.ifpi.edu.br" required>
+                    <input type="email" name="email" id="emailAluno" placeholder="capau.matricula@aluno.ifpi.edu.br" value="{{ session['aluno_temp']['email'] }}" required>
 
                     <label for="senha">Senha</label>
                     <div class="input-group">
-                        <input type="password" id="senhaAluno" name="senha" placeholder="Mínimo 8 caracteres" required>
+                        <input type="password" id="senhaAluno" name="senha" placeholder="Mínimo 8 caracteres" value="{{ session['aluno_temp']['password'] }}" required>
                         <span class="eye" id="eyeAluno">👁</span>
                     </div>
 
