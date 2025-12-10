@@ -16,7 +16,7 @@ app = flask.Flask(__name__)
 database.init_globals()
 
 resend.api_key = os.getenv("RESEND_API_KEY")
-# app.secret_key = os.getenv('SECRET_KEY')
+app.secret_key = os.getenv('SECRET_KEY')
 # app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 # app.config['MAIL_PORT'] = 587
 # app.config['MAIL_USE_TLS'] = True
