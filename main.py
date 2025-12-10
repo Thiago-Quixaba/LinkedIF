@@ -62,7 +62,7 @@ def gerarCodigo(tamanho=6):
 def enviarCodigo(context: dict):
     '''Envia um código de verificação para o e-mail do usuário.'''
     resend.Emails.send({
-        "from": "LinkedIF <noreply@resend.dev>",  # recomendado depois verificar domínio
+        "from": "LinkedIF <noreply@linkedifpi.online>",  # recomendado depois verificar domínio
         "to": context['email'],
         "subject": "Código de Verificação",
         "html": f"""
