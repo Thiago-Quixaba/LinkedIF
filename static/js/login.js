@@ -35,17 +35,31 @@ loginForm.addEventListener("submit", (event) => {
 
 loginBtn.addEventListener("click", async () => {
 
-    const regex = /^(capau\.)?[a-zA-Z0-9]+@(aluno\.)?ifpi\.edu\.br$/;
+    const regexAluno = /^capau\.[a-zA-Z0-9]+@aluno\.ifpi\.edu\.br$/;
+    const regexProfessor = /^[a-zA-Z0-9._]+@ifpi\.edu\.br$/;
 
-    if (!regex.test(emailInput.value)) {
-        textError.textContent = "Use um e-mail institucional do IFPI.";
-        emailInput.classList.add("error-border");
-        emailInput.focus(); 
-        return; 
-    } else {
-        textError.textContent = "";
-        emailInput.classList.remove("error-border");
+    if (tipoUsuario.value == "aluno") {
+        if (!regexAluno.test(emailInput.value)) {
+            textError.textContent = "Use um e-mail institucional do IFPI.";
+            emailInput.classList.add("error-border");
+            emailInput.focus(); 
+            return; 
+        } else {
+            textError.textContent = "";
+            emailInput.classList.remove("error-border");
+        }
+    } else if (tipoUsuario.value == "professor") {
+        if (!regexProfessor.test(emailInput.value)) {
+            textError.textContent = "Use um e-mail institucional do IFPI.";
+            emailInput.classList.add("error-border");
+            emailInput.focus(); 
+            return; 
+        } else {
+            textError.textContent = "";
+            emailInput.classList.remove("error-border");
+        }
     }
+    
 
     if (senhaInput.value.length < 8) {
         textError.textContent = "A senha deve ter no mínimo 8 caracteres.";

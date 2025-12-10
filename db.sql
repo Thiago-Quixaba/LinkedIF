@@ -21,7 +21,7 @@ create table alunos (
     birthdate date not null,
     cpf text unique not null,
     email text unique not null,
-    class Text
+    class Text not null
 );
 
 create trigger trg_atualiza_aluno

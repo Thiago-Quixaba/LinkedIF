@@ -6,11 +6,11 @@ import os
 supabase = None
 master_cipher: Fernet = None
 
-def init_globals():
+def init_globals(SUPABASE_URL, SUPABASE_KEY):
     """Inicializa as variáveis globais supabase e master_cipher."""
     global supabase, master_cipher
 
-    supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"),)
+    supabase = create_client(SUPABASE_URL, SUPABASE_KEY,)
 
     master_cipher = Fernet(os.getenv('MASTER_KEY').encode())
 

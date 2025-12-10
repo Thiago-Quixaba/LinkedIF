@@ -3,7 +3,6 @@
 # ======================================
 
 import flask, database, random, resend, os
-# from flask_mail import Mail, Message
 # from dotenv import load_dotenv
 
 
@@ -13,18 +12,10 @@ import flask, database, random, resend, os
 
 app = flask.Flask(__name__)
 # load_dotenv()
-database.init_globals()
+database.init_globals(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
 
 resend.api_key = os.getenv("RESEND_API_KEY")
 app.secret_key = os.getenv('SECRET_KEY')
-# app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-# app.config['MAIL_PORT'] = 587
-# app.config['MAIL_USE_TLS'] = True
-# app.config['MAIL_USERNAME'] = 'linkedifpi@gmail.com'
-# app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
-
-# global mail 
-# mail = Mail(app)
 
 
 # ======================================
