@@ -2,10 +2,9 @@
 # IMPORTS DE BIBLIOTECAS E MODULOS: 
 # ======================================
 
-import flask, database, random
-from flask_mail import Mail, Message
+import flask, database, random, resend, os
+# from flask_mail import Mail, Message
 # from dotenv import load_dotenv
-import os
 
 
 # ======================================
@@ -16,15 +15,16 @@ app = flask.Flask(__name__)
 # load_dotenv()
 database.init_globals()
 
-app.secret_key = os.getenv('SECRET_KEY')
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'linkedifpi@gmail.com'
-app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+resend.api_key = os.getenv("RESEND_API_KEY")
+# app.secret_key = os.getenv('SECRET_KEY')
+# app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+# app.config['MAIL_PORT'] = 587
+# app.config['MAIL_USE_TLS'] = True
+# app.config['MAIL_USERNAME'] = 'linkedifpi@gmail.com'
+# app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 
-global mail 
-mail = Mail(app)
+# global mail 
+# mail = Mail(app)
 
 
 # ======================================
@@ -61,13 +61,11 @@ def gerarCodigo(tamanho=6):
 
 def enviarCodigo(context: dict):
     '''Envia um código de verificação para o e-mail do usuário.'''
-    msg = Message(
-        subject='Código de verificação',
-        sender=app.config['MAIL_USERNAME'],
-        recipients=[context['email']]
-    )
-
-    msg.html = f"""
+    resend.Emails.send({
+        "from": "LinkedIF <linkedifpi@gmail.com>",  # recomendado depois verificar domínio
+        "to": context['email'],
+        "subject": "Código de Verificação",
+        "html": f"""
     <div style='width:100%; background-color:#f2f2f2; padding:30px 0; font-family:Arial, sans-serif;'>
 
         <div style='
@@ -118,9 +116,7 @@ def enviarCodigo(context: dict):
 
     </div>
     """
-
-    mail.send(msg)
-
+    })
 
 # ======================================
 # ROTAS DE AÇÕES: 
