@@ -1,8 +1,7 @@
 from cryptography.fernet import Fernet
-from supabase import create_client, ClientOptions
+from supabase import create_client, Client
 # from dotenv import load_dotenv
 import os
-from httpx import Client
 
 supabase = None
 master_cipher: Fernet = None
@@ -10,19 +9,8 @@ master_cipher: Fernet = None
 def init_globals():
     """Inicializa as variáveis globais supabase e master_cipher."""
     global supabase, master_cipher
-    http = Client(proxies=None)
 
-    options = ClientOptions(
-        auto_refresh_token=True,
-        persist_session=True,
-        http_client=http
-    )
-
-    supabase = create_client(
-        os.getenv("SUPABASE_URL"),
-        os.getenv("SUPABASE_KEY"),
-        options=options
-    )
+    supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"),)
 
     master_cipher = Fernet(os.getenv('MASTER_KEY').encode())
 
