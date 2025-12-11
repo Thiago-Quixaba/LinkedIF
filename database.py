@@ -6,13 +6,11 @@ import os
 supabase = None
 master_cipher: Fernet = None
 
-def init_globals(SUPABASE_URL, SUPABASE_KEY):
+def init_globals(SUPABASE_URL, SUPABASE_KEY, MASTER_KEY):
     """Inicializa as variáveis globais supabase e master_cipher."""
     global supabase, master_cipher
-
     supabase = create_client(SUPABASE_URL, SUPABASE_KEY,)
-
-    master_cipher = Fernet(os.getenv('MASTER_KEY').encode())
+    master_cipher = Fernet(MASTER_KEY)
 
 
 class Professores():
@@ -73,6 +71,27 @@ class Professores():
             }
         }
 
+    @staticmethod
+    def verifyInsert(email: str, cpf: str):
+        try:
+            email_exists = len(supabase.table('professores').select('id').eq("email", email).execute().data) > 0
+            cpf_exists = len(supabase.table('professores').select('id').eq("cpf", cpf).execute().data) > 0
+        except:
+            return {
+                'status': 500,
+                'body': "Erro ao consultar o banco de dados."
+            }
+        
+        if email_exists or cpf_exists:
+            return {
+                'status': 409,
+                'body': "CPF e/ou email já cadastrados no banco de dados"
+            }
+
+        return {
+            'status': 200,
+            'body': True
+        }
 
 
 class Alunos():
@@ -133,4 +152,26 @@ class Alunos():
                 'cpf': cipher.decrypt(row['cpf'].encode()).decode(),
                 'class': row['class']
             }
+        }
+    
+    @staticmethod
+    def verifyInsert(email: str, cpf: str):
+        try:
+            email_exists = len(supabase.table('alunos').select('id').eq("email", email).execute().data) > 0
+            cpf_exists = len(supabase.table('alunos').select('id').eq("cpf", cpf).execute().data) > 0
+        except:
+            return {
+                'status': 500,
+                'body': "Erro ao consultar o banco de dados."
+            }
+        
+        if email_exists or cpf_exists:
+            return {
+                'status': 409,
+                'body': "CPF e/ou email já cadastrados no banco de dados"
+            }
+
+        return {
+            'status': 200,
+            'body': True
         }

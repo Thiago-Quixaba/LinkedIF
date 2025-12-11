@@ -173,20 +173,27 @@ cadastroBtn.addEventListener("click", async () => {
             method: 'POST',
             body: formData
         });
-        
-        if (response.ok) {
-            const html = await response.text();
-            
-            document.open();
-            document.write(html);
-            document.close();
-            
-        } else {
-            textError.textContent = "Erro no cadastro. Tente novamente. 1";
-            textError.style.color = "rgb(255, 80, 80)";
-        }
+
+        if (response.status === 200) {
+                const html = await response.text();  // agora funciona
+                document.open();
+                document.write(html);
+                document.close();
+                return;
+            }
+
+            const data = await response.json(); // agora só usa json em erros
+
+            if (response.status === 409) {
+                textError.textContent = data.body;
+                textError.style.color = "rgb(255, 80, 80)";
+            } else {
+                textError.textContent = "Erro de conexão. Tente novamente.";
+                textError.style.color = "rgb(255, 80, 80)";
+            }
+
     } catch (error) {
-        textError.textContent = "Erro de conexão. Tente novamente. 2";
+        textError.textContent = "Erro de conexão. Tente novamente.";
         textError.style.color = "rgb(255, 80, 80)";
     }
 });

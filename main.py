@@ -3,16 +3,15 @@
 # ======================================
 
 import flask, database, random, resend, os
-# from dotenv import load_dotenv
-
 
 # ======================================
 # CONFIGURAÇÃO DO APP: 
 # ======================================
 
 app = flask.Flask(__name__)
+# from dotenv import load_dotenv
 # load_dotenv()
-database.init_globals(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
+database.init_globals(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"), os.getenv('MASTER_KEY').encode())
 
 resend.api_key = os.getenv("RESEND_API_KEY")
 app.secret_key = os.getenv('SECRET_KEY')
@@ -140,20 +139,24 @@ def login():
 # --- Rotas de Cadastro ---
 @app.route('/cadastrarAluno', methods=['POST'])
 def cadastrarAluno():
-    aluno = {
-        'name': flask.request.form.get('nome'),
-        'birthdate': flask.request.form.get('dataDeNascimento'), 
-        'cpf': flask.request.form.get('cpf'),
-        'email': flask.request.form.get('email').lower(),
-        'class': flask.request.form.get('turma'),
-        'password': flask.request.form.get('senha')
-    }
-    codigo = gerarCodigo()
-    flask.session['codigo_verificacao'] = codigo
-    flask.session['aluno_temp'] = aluno
+    result = database.Alunos.verifyInsert(flask.request.form.get('email').lower(), flask.request.form.get('cpf'))
+    if result['status'] == 200:
+        aluno = {
+            'name': flask.request.form.get('nome'),
+            'birthdate': flask.request.form.get('dataDeNascimento'), 
+            'cpf': flask.request.form.get('cpf'),
+            'email': flask.request.form.get('email').lower(),
+            'class': flask.request.form.get('turma'),
+            'password': flask.request.form.get('senha')
+        }
+        codigo = gerarCodigo()
+        flask.session['codigo_verificacao'] = codigo
+        flask.session['aluno_temp'] = aluno
 
-    enviarCodigo(context = {'email': aluno['email'], 'codigo': codigo})
-    return flask.render_template('cadastro/aluno/confirmar.html', aluno=aluno)
+        enviarCodigo(context = {'email': aluno['email'], 'codigo': codigo})
+        return flask.render_template('cadastro/aluno/confirmar.html', aluno=aluno)
+    else:
+        return flask.jsonify(result), result['status']
 
 @app.route('/confirmarEmailAluno', methods=['POST'])
 def confirmarEmailAluno():
@@ -169,19 +172,23 @@ def confirmarEmailAluno():
 
 @app.route('/cadastrarProfessor', methods=['POST'])
 def cadastrarProfessor():
-    professor = {
-        'name': flask.request.form.get('nome'),
-        'birthdate': flask.request.form.get('dataDeNascimento'), 
-        'cpf': flask.request.form.get('cpf'),
-        'email': flask.request.form.get('email').lower(),
-        'password': flask.request.form.get('senha')
-    }
-    codigo = gerarCodigo()
-    flask.session['codigo_verificacao'] = codigo
-    flask.session['professor_temp'] = professor
+    result = database.Professores.verifyInsert(flask.request.form.get('email').lower(), flask.request.form.get('cpf'))
+    if result['status'] == 200:
+        professor = {
+            'name': flask.request.form.get('nome'),
+            'birthdate': flask.request.form.get('dataDeNascimento'), 
+            'cpf': flask.request.form.get('cpf'),
+            'email': flask.request.form.get('email').lower(),
+            'password': flask.request.form.get('senha')
+        }
+        codigo = gerarCodigo()
+        flask.session['codigo_verificacao'] = codigo
+        flask.session['professor_temp'] = professor
 
-    enviarCodigo(context = {'email': professor['email'], 'codigo': codigo})
-    return flask.render_template('cadastro/professor/confirmar.html', professor=professor)
+        enviarCodigo(context = {'email': professor['email'], 'codigo': codigo})
+        return flask.render_template('cadastro/professor/confirmar.html', professor=professor)
+    else:
+        return flask.jsonify(result), result['status']
 
 @app.route('/confirmarEmailProfessor', methods=['POST'])
 def confirmarEmailProfessor():
