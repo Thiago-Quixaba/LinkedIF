@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>LinkedIF | Professor</title>
+
+    <!-- Fontes -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/static/css/perfilprof.css">
+</head>
+
+<body data-theme="dark">
+
+<header class="top-header">
+    <div class="container header-content">
+        <a href="#" class="logo"><b>Linked<span>IF</span></b></a>
+
+    </div>
+</header>
+
+<main class="container main-layout">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="left-sidebar">
+        <div class="card profile-shortcut-card">
+            <div class="cover"></div>
+
+            <div class="avatar avatar-edit" id="btnEditarFoto">
+                <img src="{{ professor.photo_url if professor.photo_url else '/static/img/default_user.png' }}">
+                <div class="avatar-overlay">
+                    <i class="fas fa-camera"></i>
+                </div>
+            </div>
+
+
+            <h4>{{ professor.name }}</h4>
+            <p>{{ professor.email }}</p>
+        </div>
+    </aside>
+
+    <!-- CENTRO -->
+    <section>
+
+        <!-- Botão Criar Projeto -->
+        <div class="card create-post">
+            <div class="search-box">
+                <button class="open-create-project">Criar Projeto</button>
+            </div>
+        </div>
+
+        {% for p in projetos %}
+        <div class="card feed-item">
+
+            <div class="feed-author">
+                <img src="{{ professor.photo_url if professor.photo_url else '/static/img/default_user.png' }}">
+                <div class="author-details">
+                    <h5>Prof. {{ professor.name }}</h5>
+                    <small>{{ professor.email }}</small>
+                </div>
+            </div>
+
+            <div class="feed-content">
+
+                <!-- TÍTULO (extraído da description) -->
+                <p><strong>{{ p.title }}</strong></p>
+
+                <!-- DESCRIÇÃO -->
+                <p>{{ p.description }}</p>
+
+                <!-- REQUISITOS -->
+                <p><strong>Requisitos:</strong> {{ p.requirements }}</p>
+
+            </div>
+
+            <div class="feed-actions">
+                <button class="editarProjeto" data-id="{{ p.id }}">
+                    <i class="fas fa-pen"></i> Editar Projeto
+                </button>
+
+                <button class="apagarProjeto" data-id="{{ p.id }}">
+                    <i class="fas fa-trash"></i> Apagar Projeto
+                </button>
+
+                <button class="compartilharProjeto" data-id="{{ p.id }}">
+                    <i class="fas fa-share"></i> Compartilhar
+                </button>
+            </div>
+
+        </div>
+        {% endfor %}
+    </section>
+
+    <!-- RIGHT SIDEBAR -->
+    <aside class="right-sidebar">
+
+        <div class="card news-card">
+            <h3>- Meus Projetos -</h3>
+
+            {% for p in projetos %}
+            <div class="mini-project">
+                <h4>{{ p.description.split('\n')[0] }}</h4>
+                <p>{{ p.description[:80] }}...</p>
+            </div>
+            {% endfor %}
+
+            <a class="view-all green open-create-project">+ Criar Novo Projeto</a>
+        </div>
+        <div class="card students-card">
+            <h3>Lista de Perfis de Alunos</h3>
+
+            {% for aluno in alunos[:3] %}
+                <div class="student-item">
+                    <img 
+                        src="{{ aluno.photo_url if aluno.photo_url else '/static/img/default_user.png' }}" 
+                        alt="Foto do aluno" 
+                        class="student-avatar"
+                    >
+
+                    <div class="student-info">
+                        <strong>{{ aluno.name }}</strong><br>
+                        <small>{{ aluno.class }}</small>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <a class="view-all" id="btnVerAlunos">Ver Todos os Alunos</a>
+        </div>
+
+    </aside>
+</main>
+
+
+<!-- MODAL CRIAR PROJETO -->
+<div class="modal" id="modal-criar-projeto">
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h2>Criar Novo Projeto</h2>
+            <button class="close-btn" onclick="closeCreateProject()">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="formCriarProjeto">
+
+                <input type="hidden" name="professor_id" value="{{ professor.id }}">
+
+                <label>Título</label>
+                <input type="text" name="title" required>
+
+                <label>Descrição</label>
+                <textarea name="description" rows="4" required></textarea>
+
+                <label>Requisitos</label>
+                <textarea name="requirements" rows="3" required></textarea>
+
+                <button type="submit" class="post-submit-btn">Salvar Projeto</button>
+            </form>
+
+            <p id="msgProjeto"></p>
+        </div>
+    </div>
+</div>
+<!-- MODAL EDITAR PROJETO -->
+<div class="modal" id="modalEditarProjeto">
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h2>Editar Projeto</h2>
+            <button class="close-btn" onclick="closeEditarProjeto()">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="formEditarProjeto">
+
+                <input type="hidden" id="edit_id">
+
+                <label>Título</label>
+                <input type="text" id="edit_titulo" required>
+
+                <label>Descrição</label>
+                <textarea id="edit_descricao" rows="4" required></textarea>
+
+                <label>Requisitos</label>
+                <textarea id="edit_requisitos" rows="3"></textarea>
+
+                <button type="submit" class="post-submit-btn">
+                    Salvar Alterações
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- MODAL CONFIRMAR AÇÃO -->
+<div class="modal" id="modalConfirmar">
+    <div class="modal-content small">
+
+        <div class="modal-header">
+            <h2 id="confirmTitle">Confirmar ação</h2>
+        </div>
+
+        <div class="modal-body">
+            <p id="confirmMessage">
+                Tem certeza que deseja continuar?
+            </p>
+
+            <div class="confirm-actions">
+                <button class="btn-cancelar" id="btnCancelar">Cancelar</button>
+                <button class="btn-confirmar" id="btnConfirmar">Confirmar</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- MODAL LISTA DE ALUNOS -->
+<div class="modal" id="modalAlunos">
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h2>Perfis de Alunos</h2>
+            <button class="close-btn" onclick="closeModalAlunos()">&times;</button>
+        </div>
+
+        <div class="modal-body">
+
+            <!-- Busca -->
+            <div class="students-search">
+                <input type="text" id="searchAluno" placeholder="Buscar alunos por nome, curso...">
+            </div>
+
+            <!-- Lista -->
+            <div class="students-list modal-list">
+                {% for aluno in alunos %}
+                <div class="student-item">
+                    <img src="{{ aluno.photo_url if aluno.photo_url else '/static/img/default_user.png' }}" alt="Foto do aluno" class="student-avatar">
+                    <div class="student-info">
+                        <strong>{{ aluno.name }}</strong><br>
+                        {{ aluno.class }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+</div>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <p class="copyright">LinkedIF © 2025</p>
+        <div class="credits">
+            <span class="collaboratorr">Desenvolvido por:</span>
+            <span class="collaborator">Thiago Quixaba,</span>
+            <span class="collaborator">Lígia Menezzs,</span>
+            <span class="collaborator">Gabriel Henrique,</span>
+            <span class="collaborator">Ítalo da Silva,</span>
+            <span class="collaborator">Paulo César,</span>
+            <span class="collaborator">Talita Sousa</span>
+        </div>
+    </footer>
+
+<div class="modal" id="modalFotoProfessor">
+    <div class="modal-content small">
+
+        <div class="modal-header">
+            <h2>Atualizar foto</h2>
+            <button class="close-btn" onclick="closeModalFoto()">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="formFotoProfessor">
+
+                <input type="file" id="fotoProfessor" accept="image/*" required>
+
+                <button type="submit" class="post-submit-btn">
+                    Salvar Foto
+                </button>
+
+            </form>
+        </div>
+
+    </div>
+</div>
+
+
+<script src="/static/js/perfilprof.js"></script>
+
+</body>
+</html>

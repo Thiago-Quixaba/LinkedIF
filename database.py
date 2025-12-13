@@ -106,7 +106,7 @@ class Alunos():
         else:
             encrypted_photo = None
 
-        supabase.table('alunos').insert({
+        res = supabase.table('alunos').insert({
             'encryption_key': master_cipher.encrypt(encryption_key).decode(),
             'password': cipher.encrypt(aluno['password'].encode()).decode(),
             'name': aluno['name'],
@@ -114,8 +114,11 @@ class Alunos():
             'birthdate': aluno['birthdate'],
             'cpf': cipher.encrypt(aluno['cpf'].encode()).decode(),
             'email': aluno['email'],
-            'class': aluno['class']        
-        }).execute()
+            'class': aluno['class']
+        }, returning="representation").execute()
+
+        return res
+
 
     @staticmethod
     def search(email: str):

@@ -3,6 +3,10 @@
 # ======================================
 
 import flask, database, random, resend, os
+import requests
+import base64
+from flask import request
+from cryptography.fernet import Fernet
 
 # ======================================
 # CONFIGURAÇÃO DO APP: 
@@ -20,6 +24,57 @@ app.secret_key = os.getenv('SECRET_KEY')
 # ======================================
 # ROTAS DE PÁGINAS: 
 # ======================================
+# ======================================
+# ROTA DE UPLOAD PARA IMGBB (CORRETA)
+# ======================================
+IMGBB_KEY = os.getenv("IMGBB_KEY")
+
+@app.route("/upload_image", methods=["POST"])
+def upload_image():
+    try:
+        if not IMGBB_KEY:
+            return flask.jsonify({
+                "success": False,
+                "error": "IMGBB_KEY não configurada"
+            }), 500
+
+        file = flask.request.files.get("image")
+
+        if not file:
+            return flask.jsonify({
+                "success": False,
+                "error": "Nenhuma imagem enviada"
+            }), 400
+
+        # Converte imagem para base64
+        image_base64 = base64.b64encode(file.read()).decode("utf-8")
+
+        url = "https://api.imgbb.com/1/upload"
+        payload = {
+            "key": IMGBB_KEY,
+            "image": image_base64
+        }
+
+        # ENVIO CORRETO
+        res = requests.post(url, data=payload)
+        data = res.json()
+
+        if res.status_code == 200 and "data" in data:
+            return flask.jsonify({
+                "success": True,
+                "url": data["data"]["url"]
+            })
+
+        return flask.jsonify({
+            "success": False,
+            "error": data
+        }), 500
+
+    except Exception as e:
+        return flask.jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
 
 # --- Rota de Login ---
 @app.route('/')
@@ -123,16 +178,32 @@ def login():
 
     if user['tipoUsuario'] == 'aluno':
         res = database.Alunos.search(user['email'])
+
     elif user['tipoUsuario'] == 'professor':
         res = database.Professores.search(user['email'])
-    
-    if res['status'] == 200:
-        if user['senha'] == res['body']['password']:
-            return flask.jsonify({'Login': True, 'type': user['tipoUsuario'], 'user': res['body']}), 200
-        else:
-            return flask.jsonify({'Login': False, 'body': "Senha Incorreta!"}), 401
-    else:
+
+    if res['status'] != 200:
         return flask.jsonify({'Login': False, 'body': res['body']}), res['status']
+
+    if user['senha'] != res['body']['password']:
+        return flask.jsonify({'Login': False, 'body': "Senha incorreta"}), 401
+
+    # 🔐 LOGIN OK → SALVA NA SESSÃO
+    flask.session.clear()
+
+    if user['tipoUsuario'] == 'professor':
+        flask.session["professor_id"] = res['body']['id']
+        flask.session["tipo"] = "professor"
+
+    elif user['tipoUsuario'] == 'aluno':
+        flask.session["aluno_id"] = res['body']['id']
+        flask.session["tipo"] = "aluno"
+
+    return flask.jsonify({
+        'Login': True,
+        'type': user['tipoUsuario'],
+        'user': res['body']
+    }), 200
 
 
 
@@ -161,14 +232,26 @@ def cadastrarAluno():
 @app.route('/confirmarEmailAluno', methods=['POST'])
 def confirmarEmailAluno():
     codigo = flask.request.form.get('codigo')
-
     aluno = flask.session.get('aluno_temp')
 
-    if codigo == flask.session.get('codigo_verificacao'):
-        database.Alunos.insert(aluno)
-        return flask.jsonify({'confirm': True})
-    else:
+    if codigo != flask.session.get('codigo_verificacao'):
         return flask.jsonify({'confirm': False})
+
+    # 1 — INSERE O ALUNO
+    res = database.Alunos.insert(aluno)
+    print("RESPOSTA DA INSERÇÃO DO ALUNO:", res.data)
+    # 2 — PEGA O ID DIRETO DO RETORNO (SEM SEARCH)
+    aluno_id = res.data[0]['id']
+
+    # 3 — INSERE O PERFIL VAZIO (SE NÃO EXISTIR)
+    database.supabase.table("perfis").insert({
+        "aluno_id": aluno_id,
+        "skills": "",
+        "experiences": "",
+        "contact": ""
+    }).execute()
+
+    return flask.jsonify({'confirm': True})
 
 @app.route('/cadastrarProfessor', methods=['POST'])
 def cadastrarProfessor():
@@ -202,6 +285,416 @@ def confirmarEmailProfessor():
     else:
         return flask.jsonify({'confirm': False})
 
+# ======================================
+# ROTAS DE PÁGINAS: 
+# ======================================
+
+
+@app.route('/perfil_aluno/<int:id>')
+def perfil_aluno(id):
+    aluno = (
+        database.supabase
+        .table("alunos")
+        .select("*")
+        .eq("id", id)
+        .single()
+        .execute()
+        .data
+    )
+
+    perfil = (
+        database.supabase
+        .table("perfis")
+        .select("*")
+        .eq("aluno_id", id)
+        .single()
+        .execute()
+        .data
+    )
+
+    projetos_raw = database.supabase.table("projetos").select("*").execute().data
+    projetos = []
+    # 🔓 DESCRIPTOGRAFAR FOTO DO ALUNO (UMA ÚNICA VEZ)
+    if aluno.get("photo_url"):
+        try:
+            decrypted_key = database.master_cipher.decrypt(
+                aluno["encryption_key"].encode()
+            )
+            cipher = Fernet(decrypted_key)
+
+            decrypted_photo = cipher.decrypt(
+                aluno["photo_url"].encode()
+            ).decode()
+
+            if decrypted_photo.startswith("http"):
+                aluno["photo_url"] = decrypted_photo
+            else:
+                aluno["photo_url"] = None
+
+        except Exception as e:
+            print("Erro ao descriptografar foto do aluno:", e)
+            aluno["photo_url"] = None
+
+
+    for p in projetos_raw:
+        prof = (
+            database.supabase
+            .table("professores")
+            .select("name, email, photo_url, encryption_key")
+            .eq("id", p["professor_id"])
+            .single()
+            .execute()
+            .data
+        )
+
+
+        # 🔐 DESCRIPTOGRAFAR FOTO DO PROFESSOR
+        professor_photo = None
+        if prof.get("photo_url"):
+            decrypted_key = database.master_cipher.decrypt(
+                prof["encryption_key"].encode()
+            )
+            cipher = Fernet(decrypted_key)
+            professor_photo = cipher.decrypt(
+                prof["photo_url"].encode()
+            ).decode()
+
+        projetos.append({
+            "id": p["id"],
+            "title": p["title"],
+            "description": p["description"],
+            "requirements": p["requirements"],
+            "professor_nome": prof["name"],
+            "professor_email": prof["email"],
+            "professor_foto": professor_photo
+        })
+    
+
+    return flask.render_template(
+        "perfis/perfil_aluno.html",
+        aluno=aluno,
+        perfil=perfil,
+        projetos=projetos
+    )
+
+@app.route('/atualizar_perfil', methods=['POST'])
+def atualizar_perfil():
+    aluno_id = flask.request.form.get("aluno_id")
+    skills = flask.request.form.get("skills")
+    experiences = flask.request.form.get("experiences")
+    contact = flask.request.form.get("contact")
+    photo_url = flask.request.form.get("photo_url")
+
+    # Atualiza dados do perfil
+    database.supabase.table("perfis").update({
+        "skills": skills,
+        "experiences": experiences,
+        "contact": contact
+    }).eq("aluno_id", aluno_id).execute()
+
+    # Atualiza FOTO (CRIPTOGRAFADA) na tabela ALUNOS
+    if photo_url:
+        # Busca a chave do aluno
+        aluno = (
+            database.supabase
+            .table("alunos")
+            .select("encryption_key")
+            .eq("id", aluno_id)
+            .single()
+            .execute()
+            .data
+        )
+
+        # Descriptografa a chave
+        decrypted_key = database.master_cipher.decrypt(
+            aluno["encryption_key"].encode()
+        )
+
+        cipher = Fernet(decrypted_key)
+
+        # Criptografa a URL da foto
+        encrypted_photo = cipher.encrypt(photo_url.encode()).decode()
+
+        # Atualiza no banco
+        database.supabase.table("alunos").update({
+            "photo_url": encrypted_photo
+        }).eq("id", aluno_id).execute()
+
+    return flask.jsonify({"update": True, "photo_url": photo_url})
+
+# --- Rotas de Busca ---
+@app.route("/buscar_projetos", methods=["GET", "POST"])
+def buscar_projetos():
+    termo = ""
+
+    if flask.request.method == "GET":
+        termo = flask.request.args.get("termo", "").strip()
+
+    elif flask.request.is_json:
+        termo = flask.request.json.get("termo", "").strip()
+
+    if not termo:
+        return flask.jsonify({"projetos": []})
+
+    res = (
+        database.supabase
+        .table("projetos")
+        .select("""
+            id,
+            title,
+            description,
+            requirements,
+            professores(name, email)
+        """)
+        .or_(
+            f"title.ilike.%{termo}%,"
+            f"description.ilike.%{termo}%,"
+            f"requirements.ilike.%{termo}%"
+        )
+        .execute()
+    )
+
+    projetos = [{
+        "id": p["id"],
+        "title": p["title"],
+        "description": p["description"],
+        "requirements": p["requirements"],
+        "professor_nome": p["professores"]["name"],
+        "professor_email": p["professores"]["email"]
+    } for p in res.data]
+
+    return flask.jsonify({"projetos": projetos})
+
+
+# ======================================
+# HOME DO PROFESSOR (FALTAVA!)
+# ======================================
+@app.route('/professor/<int:id>')
+def professor_home(id):
+
+    professor = (
+        database.supabase
+        .table("professores")
+        .select("*")
+        .eq("id", id)
+        .single()
+        .execute()
+        .data
+    )
+
+    # 🔓 DESCRIPTOGRAFAR FOTO (se existir)
+    if professor.get("photo_url"):
+        decrypted_key = database.master_cipher.decrypt(
+            professor["encryption_key"].encode()
+        )
+        cipher = Fernet(decrypted_key)
+
+        try:
+            professor["photo_url"] = cipher.decrypt(
+                professor["photo_url"].encode()
+            ).decode()
+        except:
+            professor["photo_url"] = None
+
+    projetos = (
+        database.supabase
+        .table("projetos")
+        .select("*")
+        .eq("professor_id", id)
+        .order("updated_at", desc=True)
+        .execute()
+        .data
+    )
+
+    alunos_raw = (
+        database.supabase
+        .table("alunos")
+        .select("id, name, class, photo_url, encryption_key")
+        .execute()
+        .data
+    )
+
+    alunos = []
+
+    for aluno in alunos_raw:
+        foto = None
+
+        if aluno.get("photo_url"):
+            try:
+                decrypted_key = database.master_cipher.decrypt(
+                    aluno["encryption_key"].encode()
+                )
+                cipher = Fernet(decrypted_key)
+
+                foto = cipher.decrypt(
+                    aluno["photo_url"].encode()
+                ).decode()
+
+            except Exception as e:
+                print("Erro ao descriptografar foto do aluno:", e)
+
+        alunos.append({
+            "id": aluno["id"],
+            "name": aluno["name"],
+            "class": aluno["class"],
+            "photo_url": foto
+        })
+
+
+    return flask.render_template(
+        "perfis/perfil_professor.html",
+        professor=professor,
+        projetos=projetos,
+        alunos=alunos
+    )
+
+@app.route("/criar_projeto", methods=["POST"])
+def criar_projeto():
+    professor_id = int(request.form.get("professor_id"))
+    description = request.form.get("description")
+    requirements = request.form.get("requirements")
+
+    # O título é a PRIMEIRA LINHA da description
+    title = description.split("\n")[0].strip()
+
+    try:
+        database.supabase.table("projetos").insert({
+            "professor_id": professor_id,
+            "title": title,
+            "description": description,
+            "requirements": requirements,
+            "contact": "",
+            "vacancies": 1
+        }).execute()
+
+        return flask.jsonify({"success": True})
+
+    except Exception as e:
+        print("ERRO AO CRIAR:", e)
+        return flask.jsonify({"success": False, "error": str(e)})
+@app.route("/projeto/<int:id>")
+def get_projeto(id):
+    try:
+        res = (
+            database.supabase
+            .table("projetos")
+            .select("*")
+            .eq("id", id)
+            .single()
+            .execute()
+        )
+
+        if res.data:
+            return flask.jsonify(res.data)
+
+        return flask.jsonify({"error": "Projeto não encontrado"}), 404
+
+    except Exception as e:
+        return flask.jsonify({"error": str(e)}), 500
+@app.route("/projeto/editar/<int:id>", methods=["POST"])
+def editar_projeto(id):
+    try:
+        description = request.form.get("description")
+        requirements = request.form.get("requirements")
+
+        # Título = primeira linha da descrição
+        title = description.split("\n")[0].strip()
+
+        database.supabase.table("projetos").update({
+            "title": title,
+            "description": description,
+            "requirements": requirements
+        }).eq("id", id).execute()
+
+        return flask.jsonify({"success": True})
+
+    except Exception as e:
+        return flask.jsonify({"success": False, "error": str(e)})
+
+@app.route("/projeto/apagar/<int:id>", methods=["DELETE"])
+def apagar_projeto(id):
+    try:
+        database.supabase.table("projetos").delete().eq("id", id).execute()
+        return flask.jsonify({"success": True})
+
+    except Exception as e:
+        return flask.jsonify({"success": False, "error": str(e)})
+@app.route("/projeto/view/<int:id>")
+def projeto_view(id):
+    try:
+        # Busca projeto
+        projeto = (
+            database.supabase
+            .table("projetos")
+            .select("*")
+            .eq("id", id)
+            .single()
+            .execute()
+            .data
+        )
+
+        if not projeto:
+            return flask.jsonify({"error": "Projeto não encontrado"}), 404
+
+        # Busca professor
+        professor = (
+            database.supabase
+            .table("professores")
+            .select("name, email, photo_url")
+            .eq("id", projeto["professor_id"])
+            .single()
+            .execute()
+            .data
+        )
+
+        return flask.jsonify({
+            "success": True,
+            "projeto": projeto,
+            "professor": professor
+        })
+
+    except Exception as e:
+        return flask.jsonify({"success": False, "error": str(e)}), 500
+@app.route('/atualizar_foto_professor', methods=['POST'])
+def atualizar_foto_professor():
+
+    professor_id = flask.session.get("professor_id")
+
+    if not professor_id:
+        return flask.jsonify({"update": False, "error": "Professor não autenticado"}), 401
+
+    photo_url = flask.request.json.get("photo_url")
+
+    if not photo_url:
+        return flask.jsonify({"update": False, "error": "URL da foto ausente"}), 400
+
+    # Busca a chave criptográfica do professor
+    professor = (
+        database.supabase
+        .table("professores")
+        .select("encryption_key")
+        .eq("id", professor_id)
+        .single()
+        .execute()
+        .data
+    )
+
+    # Descriptografa a chave
+    decrypted_key = database.master_cipher.decrypt(
+        professor["encryption_key"].encode()
+    )
+
+    cipher = Fernet(decrypted_key)
+
+    # Criptografa a URL da foto
+    encrypted_photo = cipher.encrypt(photo_url.encode()).decode()
+
+    # Atualiza no banco
+    database.supabase.table("professores").update({
+        "photo_url": encrypted_photo
+    }).eq("id", professor_id).execute()
+
+    return flask.jsonify({"update": True})
 
 # ======================================
 # RUN APP:

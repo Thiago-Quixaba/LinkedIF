@@ -83,8 +83,15 @@ loginBtn.addEventListener("click", async () => {
         switch (response.status) {
 
             case 200:
-                window.location.href = "/embreve";
+                if (data.type === "aluno") {
+                    window.location.href = `/perfil_aluno/${data.user.id}`;
+                }
+                else if (data.type === "professor") {
+                    window.location.href = `/professor/${data.user.id}`; 
+                    // depois você troca aqui para home_professor/<id>
+                }
                 break;
+
 
             case 401:
                 textError.textContent = data.body;

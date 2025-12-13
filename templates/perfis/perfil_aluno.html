@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>LinkedIF | Perfil do Aluno</title>
+
+    <!-- Fontes -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- CSS do perfil -->
+    <link rel="stylesheet" href="/static/css/perfil.css">
+</head>
+
+<body data-theme="dark">
+
+    <!-- HEADER -->
+    <header class="top-header">
+        <div class="container">
+            <b class="logo">Linked<span>IF</span></b>
+        </div>
+    </header>
+
+    <!-- LAYOUT EM TRÊS COLUNAS -->
+    <main class="container">
+
+        <!-- LEFT SIDEBAR -->
+        <aside class="left-sidebar">
+            <div class="card profile-shortcut-card">
+                <div class="cover"></div>
+
+                <div class="avatar">
+                   <img src="{{ aluno.photo_url if aluno.photo_url else 'https://cdn-icons-png.flaticon.com/512/1144/1144760.png' }}">
+                </div>
+
+
+
+                <h4>{{ aluno.name }}</h4>
+                <p>{{ aluno.email }}</p>
+                <p>Turma: {{ aluno.class }}</p>
+            </div>
+        </aside>
+
+        <!-- ======================================== -->
+        <!--           CENTRO — PROJETOS             -->
+        <!-- ======================================== -->
+        <section>
+            <div class="card create-post">
+                <div class="search-box">
+                    <input 
+                        type="text" 
+                        id="campoBusca" 
+                        placeholder="Buscar projeto..."
+                    >
+                </div>
+            </div>
+
+            
+
+        <div id="listaInicialProjetos">
+
+            {% if projetos|length > 0 %}
+
+            {% for p in projetos %}
+            <div class="project-card">
+
+            <div class="project-header">
+                <img src="{{ p.professor_foto if p.professor_foto else '/static/img/default_user.png' }}"
+                    alt="Professor">
+
+                <div class="project-info">
+                    <h4>{{ p.professor_nome }}</h4>
+                    <small>{{ p.professor_email }}</small>
+                </div>
+            </div>
+
+
+
+                <div class="project-body">
+                    <p class="proj-title">{{ p.title }}</p>
+                    <p><strong>Descrição:</strong> {{ p.description }}</p>
+                    <p><strong>Requisitos:</strong> {{ p.requirements }}</p>
+                </div>
+
+                <div class="project-actions">
+                    <button><i class="fas fa-envelope"></i> Entrar em contato</button>
+                    <button><i class="fas fa-share"></i> Compartilhar</button>
+                </div>
+
+            </div>
+            {% endfor %}
+
+
+            {% else %}
+
+                <div class="card feed-item">
+                    <p style="text-align:center; color:var(--text-secondary); padding:20px;">
+                        Ainda não há projetos disponíveis para sua turma.
+                    </p>
+                </div>
+
+            {% endif %}
+
+        </div>
+        <div id="resultadoBusca"></div>
+
+        </section>
+
+        <!-- RIGHT SIDEBAR -->
+        <aside class="right-sidebar">
+            <div class="card news-card">
+                
+                <h3 style="text-align: center;">- Meu Perfil -</h3>
+
+                <ul>
+                    <li>
+                        <h5>Habilidades:</h5>
+                        <p>{{ perfil.skills if perfil.skills else "Nenhuma habilidade cadastrada." }}</p>
+                    </li>
+
+                    <li>
+                        <h5>Experiências:</h5>
+                        <p>{{ perfil.experiences if perfil.experiences else "Nenhuma experiência cadastrada." }}</p>
+                    </li>
+
+                    <li>
+                        <h5>Contato:</h5>
+                        <p>{{ perfil.contact if perfil.contact else "Nenhum contato informado." }}</p>
+                    </li>
+                </ul>
+
+                <a id="open-edit-modal" class="view-all" style="cursor:pointer;">Editar Perfil</a>
+            </div>
+        </aside>
+
+    </main>
+
+<!-- ======================================== -->
+<!--                MODAL EDITAR              -->
+<!-- ======================================== -->
+<div class="modal" id="edit-modal">
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h2>Editar Perfil</h2>
+            <button class="close-btn" onclick="closeEditModal()">&times;</button>
+        </div>
+
+        <div class="modal-body">
+
+            <form id="formPerfil">
+                <input type="hidden" name="aluno_id" value="{{ aluno.id }}">
+
+                <!-- FOTO PERFIL -->
+                <div class="form-group">
+                    <label>Foto de Perfil</label>
+
+                    <input type="file" id="fotoPerfil" accept="image/*">
+
+                    <img 
+                        id="previewFoto" 
+                        src="{{ aluno.photo_url if aluno.photo_url else '/static/img/default_user.png' }}"
+                        style="
+                            width: 90px;
+                            height: 90px;
+                            border-radius: 50%;
+                            margin-top: 10px;
+                            border: 2px solid #0f0;
+                            object-fit: cover;
+                        "
+                    >
+
+                    <input type="hidden" name="photo_url" id="photo_url" 
+                        value="{{ aluno.photo_url if aluno.photo_url else '' }}">
+                </div>
+
+                <!-- HABILIDADES -->
+                <div class="form-group">
+                    <label>Habilidades</label>
+                    <textarea name="skills" rows="3">{{ perfil.skills }}</textarea>
+                </div>
+
+                <!-- EXPERIÊNCIAS -->
+                <div class="form-group">
+                    <label>Experiências</label>
+                    <textarea name="experiences" rows="3">{{ perfil.experiences }}</textarea>
+                </div>
+
+                <!-- CONTATO -->
+                <div class="form-group">
+                    <label>Contato</label>
+                    <input type="text" name="contact" value="{{ perfil.contact }}">
+                </div>
+
+                <button type="submit" class="post-submit-btn">Salvar</button>
+            </form>
+
+            <p id="msg"></p>
+        </div>
+    </div>
+</div>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <p class="copyright">LinkedIF © 2025</p>
+        <div class="credits">
+            <span class="collaboratorr">Desenvolvido por:</span>
+            <span class="collaborator">Thiago Quixaba,</span>
+            <span class="collaborator">Lígia Menezzs,</span>
+            <span class="collaborator">Gabriel Henrique,</span>
+            <span class="collaborator">Ítalo da Silva,</span>
+            <span class="collaborator">Paulo César,</span>
+            <span class="collaborator">Talita Sousa</span>
+        </div>
+    </footer>
+
+    <script src="/static/js/perfil.js"></script>
+
+</body>
+</html>
