@@ -13,8 +13,8 @@ from cryptography.fernet import Fernet
 # ======================================
 
 app = flask.Flask(__name__)
-# from dotenv import load_dotenv
-# load_dotenv()
+from dotenv import load_dotenv
+load_dotenv()
 database.init_globals(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"), os.getenv('MASTER_KEY').encode())
 
 resend.api_key = os.getenv("RESEND_API_KEY")
@@ -423,45 +423,44 @@ def atualizar_perfil():
     return flask.jsonify({"update": True, "photo_url": photo_url})
 
 # --- Rotas de Busca ---
-@app.route("/buscar_projetos", methods=["GET", "POST"])
+@app.route("/buscar_projetos", methods=["GET"])
 def buscar_projetos():
-    termo = ""
+    termo = flask.request.args.get("termo", "").strip()
 
-    if flask.request.method == "GET":
-        termo = flask.request.args.get("termo", "").strip()
-
-    elif flask.request.is_json:
-        termo = flask.request.json.get("termo", "").strip()
-
-    if not termo:
+    if len(termo) < 2:
         return flask.jsonify({"projetos": []})
 
     res = (
         database.supabase
         .table("projetos")
-        .select("""
-            id,
-            title,
-            description,
-            requirements,
-            professores(name, email)
-        """)
+        .select("id,title,description,requirements,professor_id")
         .or_(
-            f"title.ilike.%{termo}%,"
-            f"description.ilike.%{termo}%,"
-            f"requirements.ilike.%{termo}%"
+            f"title.ilike.%{termo}%,description.ilike.%{termo}%,requirements.ilike.%{termo}%"
         )
         .execute()
     )
 
-    projetos = [{
-        "id": p["id"],
-        "title": p["title"],
-        "description": p["description"],
-        "requirements": p["requirements"],
-        "professor_nome": p["professores"]["name"],
-        "professor_email": p["professores"]["email"]
-    } for p in res.data]
+    projetos = []
+
+    for p in res.data:
+        prof = (
+            database.supabase
+            .table("professores")
+            .select("name, email")
+            .eq("id", p["professor_id"])
+            .single()
+            .execute()
+            .data
+        )
+
+        projetos.append({
+            "id": p["id"],
+            "title": p["title"],
+            "description": p["description"],
+            "requirements": p["requirements"],
+            "professor_nome": prof["name"],
+            "professor_email": prof["email"]
+        })
 
     return flask.jsonify({"projetos": projetos})
 
