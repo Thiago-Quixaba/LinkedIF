@@ -86,8 +86,21 @@
                 </div>
 
                 <div class="project-actions">
-                    <button><i class="fas fa-envelope"></i> Entrar em contato</button>
-                    <button><i class="fas fa-share"></i> Compartilhar</button>
+                    {% if p.contato %}
+                        <a 
+                        href="https://wa.me/{{ p.contato }}"
+                        target="_blank"
+                        class="whatsapp-btn"
+                        >
+                        <i class="fab fa-whatsapp"></i> Entrar em contato
+                        </a>
+                        {% else %}
+                        <button disabled>
+                        <i class="fas fa-envelope"></i> Contato indisponível
+                        </button>
+                    {% endif %}
+
+                    <!-- <button><i class="fas fa-share"></i> Compartilhar</button> -->
                 </div>
 
             </div>

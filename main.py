@@ -580,7 +580,8 @@ def perfil_aluno(id):
             "requirements": p["requirements"],
             "professor_nome": prof["name"],
             "professor_email": prof["email"],
-            "professor_foto": professor_photo
+            "professor_foto": professor_photo,
+            "contato": p['contact']
         })
     
 
