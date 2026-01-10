@@ -136,8 +136,7 @@ def login():
 
     if user['senha'] != res['body']['password']:
         return flask.jsonify({'Login': False, 'body': "Senha incorreta"}), 401
-
-    # 🔐 LOGIN OK → SALVA NA SESSÃO
+    
     flask.session.clear()
 
     if user['tipoUsuario'] == 'professor':
@@ -386,9 +385,9 @@ def criar_projeto():
     professor_id = int(request.form.get("professor_id"))
     description = request.form.get("description")
     requirements = request.form.get("requirements")
-
-    # O título é a PRIMEIRA LINHA da description
-    title = description.split("\n")[0].strip()
+    title = request.form.get("title")
+    contact = request.form.get("contact")
+    vacancies = int(request.form.get("vacancies"))
 
     try:
         database.supabase.table("projetos").insert({
@@ -396,8 +395,8 @@ def criar_projeto():
             "title": title,
             "description": description,
             "requirements": requirements,
-            "contact": "",
-            "vacancies": 1
+            "contact": contact,
+            "vacancies": vacancies
         }).execute()
 
         return flask.jsonify({"success": True})
@@ -430,16 +429,19 @@ def get_projeto(id):
 @app.route("/projeto/editar/<int:id>", methods=["POST"])
 def editar_projeto(id):
     try:
+        title = request.form.get("title")
         description = request.form.get("description")
         requirements = request.form.get("requirements")
-
-        # Título = primeira linha da descrição
-        title = description.split("\n")[0].strip()
+        contact = request.form.get("contact")
+        vacancies = request.form.get("vacancies")
+        
 
         database.supabase.table("projetos").update({
             "title": title,
             "description": description,
-            "requirements": requirements
+            "requirements": requirements,
+            "contact": contact,
+            "vacancies": vacancies
         }).eq("id", id).execute()
 
         return flask.jsonify({"success": True})

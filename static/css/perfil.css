@@ -405,6 +405,12 @@ main.container {
    RESPONSIVIDADE
 --------------------------------------------------------- */
 @media (max-width: 1000px) {
+    .project-actions a {
+        width: 100%;
+        padding: 14px;
+        font-size: 1rem;
+        border-radius: 16px;
+    }
 
     /* Layout geral */
     main.container {
@@ -734,4 +740,21 @@ main.container {
   .search-box button {
     width: 100%;
   }
+}
+
+.project-actions a{
+    flex: 1;
+    padding: 10px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border-light);
+    background: var(--bg-input);
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    transition: all .2s ease;
+    text-decoration: none;
 }

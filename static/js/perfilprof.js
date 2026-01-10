@@ -15,18 +15,15 @@ document.querySelectorAll(".editarProjeto").forEach(btn => {
                 return;
             }
 
-            let proj = data.projeto;
-
-            // Separar título da descrição
-            let linhas = proj.description.split("\n");
-            let titulo = linhas[0];
-            let descricao = linhas.slice(1).join("\n");
+            let projeto = data.projeto;
 
             // Preenche modal
-            document.getElementById("edit_id").value = proj.id;
-            document.getElementById("edit_titulo").value = titulo;
-            document.getElementById("edit_descricao").value = descricao;
-            document.getElementById("edit_requisitos").value = proj.requirements || "";
+            document.getElementById("edit_id").value = projeto.id;
+            document.getElementById("edit_titulo").value = projeto.title;
+            document.getElementById("edit_descricao").value = projeto.description || "";
+            document.getElementById("edit_requisitos").value = projeto.requirements || "";
+            document.getElementById("edit_contact").value = projeto.contact || "";
+            document.getElementById("edit_vacancies").value = projeto.vacancies || "";
 
             // Abre modal
             document.getElementById("modalEditarProjeto").classList.add("show");
@@ -110,11 +107,16 @@ document.getElementById("formCriarProjeto").addEventListener("submit", async e =
     let titulo = form.get("title");
     let descricao = form.get("description");
     let requisitos = form.get("requirements");
+    let contato = form.get("contact");
+    let vagas = form.get("vacancies");
 
     let formFinal = new FormData();
     formFinal.append("professor_id", form.get("professor_id"));
-    formFinal.append("description", titulo + "\n" + descricao);
+    formFinal.append("title", titulo);
+    formFinal.append("description", descricao);
     formFinal.append("requirements", requisitos);
+    formFinal.append("contact", contato);
+    formFinal.append("vacancies", vagas);
 
     let req = await fetch("/criar_projeto", {
         method: "POST",
@@ -151,6 +153,8 @@ document.getElementById("formEditarProjeto")?.addEventListener("submit", async e
     let titulo = document.getElementById("edit_titulo").value;
     let descricao = document.getElementById("edit_descricao").value;
     let requisitos = document.getElementById("edit_requisitos").value;
+    let contact = document.getElementById("edit_contact").value;
+    let vacancies = document.getElementById("edit_vacancies").value;
 
     confirmarAcao({
         titulo: "Salvar alterações",
@@ -158,8 +162,11 @@ document.getElementById("formEditarProjeto")?.addEventListener("submit", async e
         onConfirm: async () => {
 
             let form = new FormData();
-            form.append("description", titulo + "\n" + descricao);
+            form.append("title", titulo);
+            form.append("description", descricao);
             form.append("requirements", requisitos);
+            form.append("contact", contact);
+            form.append("vacancies", vacancies);
 
             try {
                 await fetch(`/projeto/editar/${id}`, {

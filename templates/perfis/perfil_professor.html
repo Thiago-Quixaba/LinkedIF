@@ -68,13 +68,14 @@
             <div class="feed-content">
 
                 <!-- TÍTULO (extraído da description) -->
-                <p><strong>{{ p.title }}</strong></p>
-
-                <!-- DESCRIÇÃO -->
-                <p>{{ p.description }}</p>
+                <p><strong>{{ p.title }}: </strong> {{ p.description }}</p>
 
                 <!-- REQUISITOS -->
-                <p><strong>Requisitos:</strong> {{ p.requirements }}</p>
+                <p><strong>Requisitos: </strong> {{ p.requirements }}</p>
+
+                <p><strong>Vagas: </strong> {{ p.vacancies }}</p>
+
+                <P></P>
 
             </div>
 
@@ -85,10 +86,6 @@
 
                 <button class="apagarProjeto" data-id="{{ p.id }}">
                     <i class="fas fa-trash"></i> Apagar Projeto
-                </button>
-
-                <button class="compartilharProjeto" data-id="{{ p.id }}">
-                    <i class="fas fa-share"></i> Compartilhar
                 </button>
             </div>
 
@@ -104,7 +101,7 @@
 
             {% for p in projetos %}
             <div class="mini-project">
-                <h4>{{ p.description.split('\n')[0] }}</h4>
+                <h4>{{ p.title }}</h4>
                 <p>{{ p.description[:80] }}...</p>
             </div>
             {% endfor %}
@@ -151,13 +148,19 @@
                 <input type="hidden" name="professor_id" value="{{ professor.id }}">
 
                 <label>Título</label>
-                <input type="text" name="title" required>
+                <textarea name="title" rows="1" required></textarea>
 
                 <label>Descrição</label>
                 <textarea name="description" rows="4" required></textarea>
 
                 <label>Requisitos</label>
                 <textarea name="requirements" rows="3" required></textarea>
+
+                <label>Contato</label>
+                <textarea name="contact" rows="1"></textarea>
+
+                <label>Vagas</label>
+                <input type="number" name="vacancies" required>
 
                 <button type="submit" class="post-submit-btn">Salvar Projeto</button>
             </form>
@@ -188,6 +191,12 @@
 
                 <label>Requisitos</label>
                 <textarea id="edit_requisitos" rows="3"></textarea>
+
+                <label>Contato</label>
+                <textarea id="edit_contact" rows="1"></textarea>
+
+                <label>Vagas</label>
+                <input type="number" id="edit_vacancies" required>
 
                 <button type="submit" class="post-submit-btn">
                     Salvar Alterações
@@ -251,7 +260,7 @@
 </div>
 
     <!-- FOOTER -->
-    <footer class="site-footer">
+    <!-- <footer class="site-footer">
         <p class="copyright">LinkedIF © 2025</p>
         <div class="credits">
             <span class="collaboratorr">Desenvolvido por:</span>
@@ -262,7 +271,7 @@
             <span class="collaborator">Paulo César,</span>
             <span class="collaborator">Talita Sousa</span>
         </div>
-    </footer>
+    </footer> -->
 
 <div class="modal" id="modalFotoProfessor">
     <div class="modal-content small">
