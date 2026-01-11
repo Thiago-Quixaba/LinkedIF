@@ -44,11 +44,6 @@ def cadastro_aluno():
 def cadastro_professor():
     return flask.render_template('cadastro/professor/professor.html')
 
-# --- Tapa Buraco ---
-@app.route('/embreve')
-def embreve():
-    return flask.render_template('embreve.html')
-
 
 # ======================================
 # FUNÇÕES DE UTILIDADE: 
