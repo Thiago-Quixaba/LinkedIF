@@ -115,7 +115,7 @@
             <h3>Lista de Perfis de Alunos</h3>
 
             {% for aluno in alunos[:3] %}
-                <div class="student-item">
+                <div class="student-item" data-id="{{ aluno.id }}">
                     <img 
                         src="{{ aluno.photo_url if aluno.photo_url else '/static/img/default_user.png' }}" 
                         alt="Foto do aluno" 
@@ -248,7 +248,7 @@
             <!-- Lista -->
             <div class="students-list modal-list">
                 {% for aluno in alunos %}
-                <div class="student-item">
+                <div class="student-item" data-id="{{ aluno.id }}">
                     <img src="{{ aluno.photo_url if aluno.photo_url else '/static/img/default_user.png' }}" alt="Foto do aluno" class="student-avatar">
                     <div class="student-info">
                         <strong>{{ aluno.name }}</strong><br>
@@ -261,6 +261,33 @@
         </div>
     </div>
 </div>
+<div class="modal" id="modalAlunoDetalhes">
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h2 id="alunoNome"></h2>
+            <button class="close-btn">&times;</button>
+        </div>
+
+        <div class="modal-body">
+
+            <img id="alunoFoto" class="student-avatar-lg">
+
+            <p><strong>Turma:</strong> <span id="alunoClasse"></span></p>
+
+            <p><strong>Habilidades:</strong></p>
+            <p id="alunoSkills"></p>
+
+            <p><strong>Experiências:</strong></p>
+            <p id="alunoExperiences"></p>
+
+            <div id="alunoContatoEmail"></div>
+            <div id="alunoContatoWhatsapp"></div>
+
+        </div>
+    </div>
+</div>
+
 
     <!-- FOOTER -->
     <footer class="site-footer">

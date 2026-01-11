@@ -328,3 +328,77 @@ document.getElementById("formFotoProfessor")?.addEventListener("submit", async e
 
     location.reload();
 });
+
+
+const modalAluno = document.getElementById("modalAlunoDetalhes");
+const modalContent = modalAluno.querySelector(".modal-content");
+const closeBtn = modalAluno.querySelector(".close-btn");
+
+// fechar no X
+closeBtn.addEventListener("click", () => {
+    fecharModalAluno();
+});
+
+// fechar clicando fora
+modalAluno.addEventListener("click", (e) => {
+    if (!modalContent.contains(e.target)) {
+        fecharModalAluno();
+    }
+});
+
+function fecharModalAluno() {
+    modalAluno.classList.remove("show");
+    document.body.style.overflow = "";
+}
+
+document.querySelectorAll(".student-item").forEach(item => {
+    item.addEventListener("click", async () => {
+        const id = item.dataset.id;
+
+        try {
+            const req = await fetch(`/aluno/view/${id}`);
+            const data = await req.json();
+
+            if (!data.success) return;
+
+            const aluno = data.aluno;
+            const perfil = data.perfil || {};
+
+            document.getElementById("alunoNome").textContent = aluno.name;
+            document.getElementById("alunoClasse").textContent = aluno.class;
+
+            document.getElementById("alunoFoto").src =
+                aluno.photo_url || "/static/img/default_user.png";
+
+            document.getElementById("alunoSkills").textContent =
+                perfil.skills || "Não informado";
+
+            document.getElementById("alunoExperiences").textContent =
+                perfil.experiences || "Não informado";
+
+            // Email
+            document.getElementById("alunoContatoEmail").innerHTML =
+                aluno.email
+                    ? `<a href="https://mail.google.com/mail/?view=cm&to=${aluno.email}" target="_blank" class="whatsapp-btn">
+                            <i class="fas fa-envelope"></i> Entrar em contato
+                        </a>`
+                    : "";
+
+            // WhatsApp
+            document.getElementById("alunoContatoWhatsapp").innerHTML =
+                perfil.contact
+                    ? `<a href="https://wa.me/55${perfil.contact}" target="_blank" class="whatsapp-btn">
+                            <i class="fab fa-whatsapp"></i> Entrar em contato
+                        </a>`
+                    : `<button disabled>
+                            <i class="fab fa-whatsapp"></i> Contato indisponível
+                        </button>`;
+
+            document.getElementById("modalAlunoDetalhes").classList.add("show");
+            document.body.style.overflow = "hidden";
+
+        } catch (e) {
+            console.error("Erro ao carregar aluno:", e);
+        }
+    });
+});

@@ -787,6 +787,67 @@ def deleteToken():
     except:
         return '', 204 #precaução 
 
+
+
+@app.route("/aluno/view/<int:id>")
+def aluno_view(id):
+    try:
+        aluno = (
+            database.supabase
+            .table("alunos")
+            .select(
+                "id, name, class, email, photo_url, encryption_key"
+            )
+            .eq("id", id)
+            .single()
+            .execute()
+            .data
+        )
+
+        if not aluno:
+            return flask.jsonify({"success": False}), 404
+
+        perfil = (
+            database.supabase
+            .table("perfis")
+            .select("skills, experiences, contact")
+            .eq("aluno_id", id)
+            .single()
+            .execute()
+            .data
+        )
+
+        # 🔓 descriptografar foto
+        foto = None
+        if aluno.get("photo_url"):
+            try:
+                decrypted_key = database.master_cipher.decrypt(
+                    aluno["encryption_key"].encode()
+                )
+                cipher = Fernet(decrypted_key)
+                foto = cipher.decrypt(
+                    aluno["photo_url"].encode()
+                ).decode()
+            except:
+                foto = None
+
+        return flask.jsonify({
+            "success": True,
+            "aluno": {
+                "id": aluno["id"],
+                "name": aluno["name"],
+                "class": aluno["class"],
+                "email": aluno["email"],
+                "photo_url": foto
+            },
+            "perfil": perfil
+        })
+
+    except Exception as e:
+        print("Erro ao buscar aluno:", e)
+        return flask.jsonify({"success": False}), 500
+
+
 # ======================================
 # RUN APP:
 # ======================================
