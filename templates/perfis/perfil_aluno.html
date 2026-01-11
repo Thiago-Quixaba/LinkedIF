@@ -34,7 +34,7 @@
                 <div class="cover"></div>
 
                 <div class="avatar">
-                   <img src="{{ aluno.photo_url if aluno.photo_url else 'https://cdn-icons-png.flaticon.com/512/1144/1144760.png' }}">
+                    <img src="{{ aluno.photo_url if aluno.photo_url else 'https://cdn-icons-png.flaticon.com/512/1144/1144760.png' }}">
                 </div>
 
 
@@ -84,14 +84,14 @@
                     <p class="proj-title">{{ p.title }}</p>
                     <p><strong>Descrição:</strong> {{ p.description }}</p>
                     <p><strong>Requisitos:</strong> {{ p.requirements }}</p>
-                    <p><strong>Vagas:</strong> {{ p.vacancies }}</p>
+                    {% if p.vacancies is not none %}
+                        <p><strong>Vagas:</strong> {{ p.vacancies }}</p>
+                    {% endif %}
                 </div>
 
                 <div class="project-actions">
                     {% if p.professor_email %}
                         <a href="https://mail.google.com/mail/?view=cm&to={{ p.professor_email }}" target="_blank" class="whatsapp-btn"> <i class="fas fa-envelope"></i> Entrar em contato </a>
-                    {% else %}
-                        <button disabled> <i class="fas fa-envelope"></i> Contato indisponível </button>
                     {% endif %}
 
                     {% if p.contato %}

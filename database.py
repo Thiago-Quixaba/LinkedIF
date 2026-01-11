@@ -1,7 +1,6 @@
 from cryptography.fernet import Fernet
 from supabase import create_client, Client
-from dotenv import load_dotenv
-import os, secrets
+import secrets
 
 
 supabase = None

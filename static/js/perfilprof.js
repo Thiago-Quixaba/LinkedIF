@@ -99,6 +99,48 @@ function closeCreateProject() {
    SALVAR PROJETO NOVO
 ============================================================ */
 
+document.querySelectorAll(".contactInput").forEach(input => {
+
+    input.addEventListener("input", () => {
+        let numbers = input.value.replace(/\D/g, "");
+
+        if (numbers.length > 11) {
+            numbers = numbers.slice(0, 11);
+        }
+
+        let formatted = "";
+
+        if (numbers.length > 0) {
+            formatted = numbers;
+        }
+
+        if (numbers.length >= 3) {
+            formatted = `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
+        }
+
+        if (numbers.length >= 8) {
+            formatted = `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7)}`;
+        }
+
+        input.value = formatted;
+    });
+});
+
+document.querySelectorAll(".vacanciesInput").forEach(input => {
+    input.addEventListener("input", () => {
+        // mantém APENAS dígitos
+        let value = input.value.replace(/[^0-9]/g, "");
+
+        // remove zero ou vazio
+        if (value === "" || value === "0") {
+            input.value = "";
+            return;
+        }
+
+        input.value = parseInt(value, 10);
+    });
+});
+
 document.getElementById("formCriarProjeto").addEventListener("submit", async e => {
     e.preventDefault();
 
@@ -108,14 +150,17 @@ document.getElementById("formCriarProjeto").addEventListener("submit", async e =
     let descricao = form.get("description");
     let requisitos = form.get("requirements");
     let contato = form.get("contact");
+    if (contato) {contato = contato.replace(/\D/g, "");};
     let vagas = form.get("vacancies");
+    if (!vagas || parseInt(vagas) < 1) {vagas = null;}
+
 
     let formFinal = new FormData();
     formFinal.append("professor_id", form.get("professor_id"));
     formFinal.append("title", titulo);
     formFinal.append("description", descricao);
     formFinal.append("requirements", requisitos);
-    formFinal.append("contact", contato);
+    formFinal.append("contact", contato || null);
     formFinal.append("vacancies", vagas);
 
     let req = await fetch("/criar_projeto", {
@@ -133,6 +178,7 @@ document.getElementById("formCriarProjeto").addEventListener("submit", async e =
     } else {
         msg.style.color = "red";
         msg.textContent = "Erro ao criar projeto: " + (res.error || "desconhecido");
+        setTimeout(() => location.reload(), 800);
     }
 });
 
@@ -154,7 +200,9 @@ document.getElementById("formEditarProjeto")?.addEventListener("submit", async e
     let descricao = document.getElementById("edit_descricao").value;
     let requisitos = document.getElementById("edit_requisitos").value;
     let contact = document.getElementById("edit_contact").value;
+    if (contact) {contact = contact.replace(/\D/g, "");};
     let vacancies = document.getElementById("edit_vacancies").value;
+    if (!vacancies || parseInt(vacancies) < 1) {vacancies = null;}
 
     confirmarAcao({
         titulo: "Salvar alterações",

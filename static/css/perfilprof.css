@@ -555,6 +555,21 @@ body {
     }
 }
 
+/* ---------------------------------------------------------
+    FOOTER
+--------------------------------------------------------- */
+.site-footer {
+    margin-top: 40px;
+    border-top: 1px solid var(--border-light);
+    padding: 20px 0;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.site-footer .collaborator {
+    color: var(--text-primary);
+}
+
 /* MOBILE PEQUENO */
 @media (max-width: 480px) {
 

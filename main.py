@@ -399,7 +399,12 @@ def criar_projeto():
     requirements = request.form.get("requirements")
     title = request.form.get("title")
     contact = request.form.get("contact")
-    vacancies = int(request.form.get("vacancies"))
+    vacancies_raw = request.form.get("vacancies")
+    if vacancies_raw and vacancies_raw.isdigit() and int(vacancies_raw) >= 1:
+        vacancies = int(vacancies_raw)
+    else:
+        vacancies = None
+
 
     try:
         database.supabase.table("projetos").insert({
@@ -445,7 +450,12 @@ def editar_projeto(id):
         description = request.form.get("description")
         requirements = request.form.get("requirements")
         contact = request.form.get("contact")
-        vacancies = request.form.get("vacancies")
+        vacancies_raw = request.form.get("vacancies")
+        if vacancies_raw and vacancies_raw.isdigit() and int(vacancies_raw) >= 1:
+            vacancies = int(vacancies_raw)
+        else:
+            vacancies = None
+
         
 
         database.supabase.table("projetos").update({

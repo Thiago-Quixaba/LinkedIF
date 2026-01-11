@@ -74,7 +74,9 @@
                 <!-- REQUISITOS -->
                 <p><strong>Requisitos: </strong> {{ p.requirements }}</p>
 
-                <p><strong>Vagas: </strong> {{ p.vacancies }}</p>
+                {% if p.vacancies is not none %}
+                    <p><strong>Vagas:</strong> {{ p.vacancies }}</p>
+                {% endif %}
 
                 <P></P>
 
@@ -158,10 +160,10 @@
                 <textarea name="requirements" rows="3" required></textarea>
 
                 <label>Contato</label>
-                <textarea name="contact" rows="1"></textarea>
+                <input type="text" name="contact" class="contactInput" maxlength="15" placeholder="(00) 00000-0000">
 
                 <label>Vagas</label>
-                <input type="number" name="vacancies" required>
+                <input type="text" name="vacancies" class="vacanciesInput">
 
                 <button type="submit" class="post-submit-btn">Salvar Projeto</button>
             </form>
@@ -194,10 +196,10 @@
                 <textarea id="edit_requisitos" rows="3"></textarea>
 
                 <label>Contato</label>
-                <textarea id="edit_contact" rows="1"></textarea>
+                <input type="text" id="edit_contact" class="contactInput" maxlength="15" placeholder="(00) 00000-0000">
 
                 <label>Vagas</label>
-                <input type="number" id="edit_vacancies" required>
+                <input type="text" id="edit_vacancies" class="vacanciesInput">
 
                 <button type="submit" class="post-submit-btn">
                     Salvar Alterações
@@ -261,7 +263,7 @@
 </div>
 
     <!-- FOOTER -->
-    <!-- <footer class="site-footer">
+    <footer class="site-footer">
         <p class="copyright">LinkedIF © 2025</p>
         <div class="credits">
             <span class="collaboratorr">Desenvolvido por:</span>
@@ -272,7 +274,7 @@
             <span class="collaborator">Paulo César,</span>
             <span class="collaborator">Talita Sousa</span>
         </div>
-    </footer> -->
+    </footer>
 
 <div class="modal" id="modalFotoProfessor">
     <div class="modal-content small">
