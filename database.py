@@ -1,13 +1,13 @@
 from cryptography.fernet import Fernet
 from supabase import create_client, Client
 from dotenv import load_dotenv
-import os
+import os, secrets
+
 
 supabase = None
 master_cipher: Fernet = None
 
 def init_globals(SUPABASE_URL, SUPABASE_KEY, MASTER_KEY):
-    """Inicializa as variáveis globais supabase e master_cipher."""
     global supabase, master_cipher
     supabase = create_client(SUPABASE_URL, SUPABASE_KEY,)
     master_cipher = Fernet(MASTER_KEY)
@@ -34,6 +34,7 @@ class Professores():
             'cpf': cipher.encrypt(professor['cpf'].encode()).decode(),
             'email': professor['email']
         }).execute()
+
 
     @staticmethod
     def search(email: str):
@@ -71,6 +72,7 @@ class Professores():
             }
         }
 
+
     @staticmethod
     def verifyInsert(email: str, cpf: str):
         try:
@@ -92,6 +94,31 @@ class Professores():
             'status': 200,
             'body': True
         }
+    
+
+    @staticmethod
+    def createToken(id: int) -> str:
+        token = secrets.token_urlsafe(48)
+
+        supabase.table('professores_tokens').insert({
+            'token': token,
+            'professor_id': id
+        }).execute()
+
+        return master_cipher.encrypt(token).decode()
+
+
+    @staticmethod
+    def verifyToken(token: str, id: int) -> bool:
+        try:
+            token_real = master_cipher.decrypt(token.encode()).decode()
+            result = supabase.table('professores_tokens').select('professor_id').eq("token", token_real).single().execute()
+            res = result.data
+
+            return res['professor_id'] == id
+        except:
+            return False
+
 
 
 class Alunos():
@@ -157,6 +184,7 @@ class Alunos():
             }
         }
     
+
     @staticmethod
     def verifyInsert(email: str, cpf: str):
         try:
@@ -178,3 +206,27 @@ class Alunos():
             'status': 200,
             'body': True
         }
+    
+
+    @staticmethod
+    def createToken(id: int) -> str:
+        token = secrets.token_urlsafe(48)
+        
+        supabase.table('alunos_tokens').insert({
+            'token': token,
+            'aluno_id': id
+        }).execute()
+
+        return master_cipher.encrypt(token.encode()).decode()
+    
+
+    @staticmethod
+    def verifyToken(token: str, id: int) -> bool:
+        try:
+            token_real = master_cipher.decrypt(token.encode()).decode()
+            result = supabase.table('alunos_tokens').select('aluno_id').eq("token", token_real).single().execute()
+            res = result.data
+
+            return res['aluno_id'] == id
+        except:
+            return False

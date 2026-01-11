@@ -232,5 +232,5 @@ senhaInput.addEventListener("keydown", (e) => {
 // ============================
 loginLink.addEventListener("click", (e) => {
     e.preventDefault();
-    window.location.href = "/";
+    window.location.href = "/login";
 });

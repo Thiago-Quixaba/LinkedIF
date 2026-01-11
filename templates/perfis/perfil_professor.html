@@ -10,6 +10,7 @@
     <!-- Fontes -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="/static/js/auth.js"></script>
 
     <!-- CSS -->
     <link rel="stylesheet" href="/static/css/perfilprof.css">
@@ -19,7 +20,7 @@
 
 <header class="top-header">
     <div class="container header-content">
-        <a href="#" class="logo"><b>Linked<span>IF</span></b></a>
+        <a href="{{ url_for('login') }}" class="logo"><b>Linked<span>IF</span></b></a>
 
     </div>
 </header>

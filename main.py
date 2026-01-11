@@ -25,10 +25,15 @@ app.secret_key = os.getenv('SECRET_KEY')
 # ROTAS DE PÁGINAS: 
 # ======================================
 
-# --- Rota de Login ---
+# --- Rota de Home ---
 @app.route('/')
 def home():
     return flask.render_template('index.html')
+
+# --- Rota de Login ---
+@app.route('/login')
+def loggin():
+    return flask.render_template('login.html')
 
 # --- Rotas de Cadastro ---
 @app.route('/cadastro/aluno')
@@ -117,7 +122,7 @@ def enviarCodigo(context: dict):
 # ======================================
 
 # --- Rotas de Login ---
-@app.route('/login', methods=['POST'])
+@app.route('/loggin', methods=['POST'])
 def login():
     user = {
         'email': flask.request.form.get('email').lower(),
@@ -141,16 +146,23 @@ def login():
 
     if user['tipoUsuario'] == 'professor':
         flask.session["professor_id"] = res['body']['id']
-        flask.session["tipo"] = "professor"
+        token = database.Professores.createToken(res['body']['id'])
+        
 
     elif user['tipoUsuario'] == 'aluno':
         flask.session["aluno_id"] = res['body']['id']
-        flask.session["tipo"] = "aluno"
+        token = database.Alunos.createToken(res['body']['id'])
+
+    flask.session["tipo"] = user['tipoUsuario']
+    flask.session["token"] = token
+    res['body'].pop('password', None)
+    res['body'].pop('encryption_key', None)
 
     return flask.jsonify({
         'Login': True,
         'type': user['tipoUsuario'],
-        'user': res['body']
+        'user': res['body'],
+        'token': token
     }), 200
 
 
@@ -506,7 +518,7 @@ def atualizar_foto_professor():
 # ======================================
 
 # --- Rotas de Perfil Alunos ---
-@app.route('/perfil_aluno/<int:id>')
+@app.route('/home/aluno/<int:id>')
 def perfil_aluno(id):
     aluno = (
         database.supabase
@@ -597,7 +609,7 @@ def perfil_aluno(id):
 
 
 # --- Home do Professor ---
-@app.route('/professor/<int:id>')
+@app.route('/home/professor/<int:id>')
 def professor_home(id):
 
     professor = (
@@ -715,6 +727,29 @@ def projeto_view(id):
 
     except Exception as e:
         return flask.jsonify({"success": False, "error": str(e)}), 500
+
+
+
+@app.route("/verify/token", methods=['POST'])
+def verifyToken():
+    try:
+        token = flask.request.form.get('token')
+        user = int(flask.request.form.get('id'))
+        tipo = flask.request.form.get('type')
+        if tipo == "aluno":
+            if database.Alunos.verifyToken(token, user):
+                return flask.jsonify({'valid': True}), 200
+            else:
+                return flask.jsonify({'valid': False}), 401
+        elif tipo == "professor":
+            if database.Professores.verifyToken(token, user):
+                return flask.jsonify({'valid': True}), 200
+            else:
+                return flask.jsonify({'valid': False}), 401
+            
+        return flask.jsonify({'valid': False}), 401 #precaução 
+    except:
+        return flask.jsonify({'valid': False}), 401 #precaução plus
 
 # ======================================
 # RUN APP:

@@ -10,6 +10,7 @@
     <!-- Fontes -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="/static/js/auth.js"></script>
 
     <!-- CSS do perfil -->
     <link rel="stylesheet" href="/static/css/perfil.css">
@@ -86,10 +87,15 @@
                 </div>
 
                 <div class="project-actions">
-                    {% if p.contato %}
-                        <a href="https://wa.me/55{{ p.contato }}" target="_blank" class="whatsapp-btn"> <i class="fas fa-envelope"> </i> Entrar em contato</a>
+                    {% if p.professor_email %}
+                        <a href="mailto:{{ p.professor_email }}" target="_blank" class="whatsapp-btn"> <i class="fas fa-envelope"></i> Entrar em contato </a>
                     {% else %}
                         <button disabled> <i class="fas fa-envelope"></i> Contato indisponível </button>
+                    {% endif %}
+                    {% if p.contato %}
+                        <a href="https://wa.me/55{{ p.contato }}" target="_blank" class="whatsapp-btn"> <i class="fab fa-whatsapp"></i> Entrar em contato </a>
+                    {% else %}
+                        <button disabled> <i class="fab fa-whatsapp"></i> Contato indisponível </button>
                     {% endif %}
                 </div>
 

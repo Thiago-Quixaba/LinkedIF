@@ -1,3 +1,4 @@
+console.log("login.js rodou em:", window.location.pathname);
 const alunoBtn = document.getElementById("alunoBtn");
 const profBtn = document.getElementById("profBtn");
 const tipoUsuario = document.getElementById("tipoUsuario");
@@ -73,7 +74,7 @@ loginBtn.addEventListener("click", async () => {
     const formData = new FormData(loginForm);
     
     try {
-        const response = await fetch('/login', { 
+        const response = await fetch('/loggin', { 
             method: 'POST',
             body: formData
         });
@@ -84,10 +85,18 @@ loginBtn.addEventListener("click", async () => {
 
             case 200:
                 if (data.type === "aluno") {
-                    window.location.href = `/perfil_aluno/${data.user.id}`;
+                    localStorage.setItem("login", data.Login);
+                    localStorage.setItem("user", JSON.stringify(data.user.id));
+                    localStorage.setItem("token", data.token);
+                    localStorage.setItem("type", data.type);
+                    window.location.href = `/home/aluno/${data.user.id}`;
                 }
                 else if (data.type === "professor") {
-                    window.location.href = `/professor/${data.user.id}`; 
+                    localStorage.setItem("login", data.Login);
+                    localStorage.setItem("user", JSON.stringify(data.user.id));
+                    localStorage.setItem("token", data.token);
+                    localStorage.setItem("type", data.type);
+                    window.location.href = `/home/professor/${data.user.id}`; 
                     // depois você troca aqui para home_professor/<id>
                 }
                 break;

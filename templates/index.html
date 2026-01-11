@@ -1,51 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>LinkedIF</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
-        <link rel="icon" href="{{ url_for('static', filename='img/icon.svg') }}" type="image/x-icon">
-        <link rel="shortcut icon" href="{{ url_for('static', filename='img/icon.svg') }}" type="image/x-icon">
-    </head>
-    <body>
-        <div class="center">
-            <div class="container">
+<head>
+    <meta charset="UTF-8">
 
-                <h1 class="logo"><strong><span>Linked</span>IF</strong></h1>
+    <title>LinkedIF</title>
 
-                <h2 class="title"><b>Faça Login</b></h2>
-                <p class="subtitle">Acesse o ambiente de projetos e rede institucional.</p>
-
-                <form id="loginForm">  
-
-                    <label for="email">E-mail</label>
-                    <input type="email" name="email" id="emailLogin" placeholder="capau.matricula@aluno.ifpi.edu.br" required>
-
-                    <label for="senha">Senha</label>
-                    <div class="input-group">
-                        <input type="password" id="senhaLogin" name="senha" placeholder="Mínimo 8 caracteres" required>
-                        <span class="eye" id="eyeLogin">👁</span>
-                    </div>
-
-                    <label class="enter-as">Entrar Como:</label>
-
-                    <div class="toggle">
-                        <button type="button" class="option active" id="alunoBtn">Aluno</button>
-                        <button type="button" class="option" id="profBtn">Professor</button>
-                    </div>
-
-                    <input type="hidden" name="tipoUsuario" id="tipoUsuario" value="aluno">
-
-                    <button type="button" class="login-btn" id="loginBtn">Entrar</button>
-                    <span id="textErrorLogin" class="error"></span>
-
-                </form>
-
-                <p class="register">Novo no Linkedif? <a href="/cadastro/aluno" id="registerBtn">Crie sua conta</a></p>
-            </div>
-        </div>
-
-        <script src="{{ url_for('static', filename='js/login.js') }}"></script>
-    </body>
+    <link rel="icon" href="{{ url_for('static', filename='img/icon.svg') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/icon.svg') }}" type="image/x-icon">
+    
+    <script src="/static/js/index.js"></script>
+</head>
+<body>
+</body>
 </html>
