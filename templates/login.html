@@ -48,8 +48,25 @@
 
         <script src="{{ url_for('static', filename='js/login.js') }}"></script>
         <script>
-            localStorage.clear();
-            localStorage.setItem("login", false);
+            (async () => {
+                const login = localStorage.getItem("login");
+                if (login === 'true') {
+                    const token = localStorage.getItem("token");
+                    const type = localStorage.getItem("type");
+
+                    const formData = new FormData();
+                    formData.append("token", token);
+                    formData.append("type", type);
+                    
+                    const response = await fetch('/delete_token', { 
+                        method: 'POST',
+                        body: formData
+                    });
+                }
+
+                localStorage.clear();
+                localStorage.setItem("login", false);
+            })();
         </script>
     </body>
 </html>

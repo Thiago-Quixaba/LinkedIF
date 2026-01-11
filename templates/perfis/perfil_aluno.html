@@ -21,7 +21,7 @@
     <!-- HEADER -->
     <header class="top-header">
         <div class="container">
-            <b class="logo">Linked<span>IF</span></b>
+            <a href="{{ url_for('login') }}" class="logo"><b>Linked<span>IF</span></b></a>
         </div>
     </header>
 
@@ -84,14 +84,16 @@
                     <p class="proj-title">{{ p.title }}</p>
                     <p><strong>Descrição:</strong> {{ p.description }}</p>
                     <p><strong>Requisitos:</strong> {{ p.requirements }}</p>
+                    <p><strong>Vagas:</strong> {{ p.vacancies }}</p>
                 </div>
 
                 <div class="project-actions">
                     {% if p.professor_email %}
-                        <a href="mailto:{{ p.professor_email }}" target="_blank" class="whatsapp-btn"> <i class="fas fa-envelope"></i> Entrar em contato </a>
+                        <a href="https://mail.google.com/mail/?view=cm&to={{ p.professor_email }}" target="_blank" class="whatsapp-btn"> <i class="fas fa-envelope"></i> Entrar em contato </a>
                     {% else %}
                         <button disabled> <i class="fas fa-envelope"></i> Contato indisponível </button>
                     {% endif %}
+
                     {% if p.contato %}
                         <a href="https://wa.me/55{{ p.contato }}" target="_blank" class="whatsapp-btn"> <i class="fab fa-whatsapp"></i> Entrar em contato </a>
                     {% else %}

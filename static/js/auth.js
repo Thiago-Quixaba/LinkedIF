@@ -1,5 +1,8 @@
 (async () => {
     try {
+        const pathParts = window.location.pathname.split("/");
+        const urlId = pathParts[pathParts.length - 1];
+        const urlType = pathParts[pathParts.length - 2];
         const token = localStorage.getItem("token");
         const user = localStorage.getItem("user");
         const login = localStorage.getItem("login");
@@ -14,6 +17,8 @@
         form.append("token", token);
         form.append("id", user);
         form.append("type", tipo);
+        form.append("url_id", urlId);
+        form.append("url_type", urlType);
 
         const res = await fetch("/verify/token", {
             method: "POST",

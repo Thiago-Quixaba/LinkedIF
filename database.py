@@ -105,7 +105,14 @@ class Professores():
             'professor_id': id
         }).execute()
 
-        return master_cipher.encrypt(token).decode()
+        return master_cipher.encrypt(token.encode()).decode()
+    
+
+    @staticmethod
+    def deleteToken(token: str) -> None:
+        token_real = master_cipher.decrypt(token.encode()).decode()
+        supabase.table("professores_tokens").delete().eq("token", token_real).execute()
+
 
 
     @staticmethod
@@ -219,6 +226,11 @@ class Alunos():
 
         return master_cipher.encrypt(token.encode()).decode()
     
+    @staticmethod
+    def deleteToken(token: str) -> None:
+        token_real = master_cipher.decrypt(token.encode()).decode()
+        supabase.table("alunos_tokens").delete().eq("token", token_real).execute()
+
 
     @staticmethod
     def verifyToken(token: str, id: int) -> bool:

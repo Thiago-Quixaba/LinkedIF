@@ -97,7 +97,6 @@ loginBtn.addEventListener("click", async () => {
                     localStorage.setItem("token", data.token);
                     localStorage.setItem("type", data.type);
                     window.location.href = `/home/professor/${data.user.id}`; 
-                    // depois você troca aqui para home_professor/<id>
                 }
                 break;
 

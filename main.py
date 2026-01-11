@@ -32,7 +32,7 @@ def home():
 
 # --- Rota de Login ---
 @app.route('/login')
-def loggin():
+def login():
     return flask.render_template('login.html')
 
 # --- Rotas de Cadastro ---
@@ -123,7 +123,7 @@ def enviarCodigo(context: dict):
 
 # --- Rotas de Login ---
 @app.route('/loggin', methods=['POST'])
-def login():
+def loggin():
     user = {
         'email': flask.request.form.get('email').lower(),
         'senha': flask.request.form.get('senha'),
@@ -595,7 +595,8 @@ def perfil_aluno(id):
             "professor_nome": prof["name"],
             "professor_email": prof["email"],
             "professor_foto": professor_photo,
-            "contato": p['contact']
+            "contato": p['contact'],
+            'vacancies': p['vacancies']
         })
     
 
@@ -736,6 +737,13 @@ def verifyToken():
         token = flask.request.form.get('token')
         user = int(flask.request.form.get('id'))
         tipo = flask.request.form.get('type')
+        url_id = int(flask.request.form.get("url_id"))
+        url_type = flask.request.form.get("url_type")
+
+
+        if user != url_id or tipo != url_type:
+            return flask.jsonify({'valid': False}), 401
+
         if tipo == "aluno":
             if database.Alunos.verifyToken(token, user):
                 return flask.jsonify({'valid': True}), 200
@@ -750,6 +758,24 @@ def verifyToken():
         return flask.jsonify({'valid': False}), 401 #precaução 
     except:
         return flask.jsonify({'valid': False}), 401 #precaução plus
+
+
+
+@app.route("/delete_token", methods=['POST'])
+def deleteToken():
+    try:
+        token = flask.request.form.get('token')
+        tipo = flask.request.form.get('type')
+
+        if tipo == "aluno":
+            database.Alunos.deleteToken(token)
+        elif tipo == "professor":
+            database.Professores.deleteToken(token)
+
+        return '', 200
+
+    except:
+        return '', 204 #precaução 
 
 # ======================================
 # RUN APP:
