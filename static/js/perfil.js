@@ -1,3 +1,30 @@
+document.addEventListener("DOMContentLoaded", () => {
+    const contatoP = document.querySelector(".news-card ul li:nth-child(3) p");
+
+    if (contatoP) {
+        contatoP.textContent = formatarContato(contatoP.textContent);
+    }
+});
+
+function formatarContato(contato) {
+    if (!contato) return "Nenhum contato informado.";
+
+    // garante só números
+    contato = contato.replace(/\D/g, "");
+
+    // Exemplo Brasil celular
+    if (contato.length === 13) {
+        return `+${contato.slice(0,2)} (${contato.slice(2,4)}) ${contato.slice(4,9)}-${contato.slice(9)}`;
+    }
+
+    if (contato.length === 11) {
+        return `(${contato.slice(0,2)}) ${contato.slice(2,7)}-${contato.slice(7)}`;
+    }
+
+    return contato; // fallback
+}
+
+
 function atualizarAvatar(url) {
     const finalUrl = url + "?v=" + Date.now();
 
@@ -76,6 +103,9 @@ document.getElementById("formPerfil").addEventListener("submit", async (e) => {
 
     let form = new FormData(e.target);
 
+    let contato = form.get("contact");
+    if (contato) {contato = contato.replace(/\D/g, ""); form.set("contact", contato);}
+
     let req = await fetch("/atualizar_perfil", {
         method: "POST",
         body: form
@@ -91,7 +121,8 @@ document.getElementById("formPerfil").addEventListener("submit", async (e) => {
         // Atualiza painel direito
         document.querySelector(".news-card ul li:nth-child(1) p").textContent = form.get("skills");
         document.querySelector(".news-card ul li:nth-child(2) p").textContent = form.get("experiences");
-        document.querySelector(".news-card ul li:nth-child(3) p").textContent = form.get("contact");
+        document.querySelector(".news-card ul li:nth-child(3) p").textContent = formatarContato(form.get("contact"));
+
 
         // ✅ ATUALIZA FOTO VISUALMENTE
         if (res.photo_url) {
@@ -172,3 +203,31 @@ document.getElementById("campoBusca").addEventListener("input", () => {
         buscarProjetos();
     }, 400);
 });
+
+document.querySelectorAll(".contactInput").forEach(input => {
+
+    input.addEventListener("input", () => {
+        let numbers = input.value.replace(/\D/g, "");
+
+        if (numbers.length > 11) {
+            numbers = numbers.slice(0, 11);
+        }
+
+        let formatted = "";
+
+        if (numbers.length > 0) {
+            formatted = numbers;
+        }
+
+        if (numbers.length >= 3) {
+            formatted = `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
+        }
+
+        if (numbers.length >= 8) {
+            formatted = `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7)}`;
+        }
+
+        input.value = formatted;
+    });
+});
+

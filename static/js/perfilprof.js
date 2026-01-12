@@ -523,7 +523,7 @@ document.querySelectorAll(".aluno-item").forEach(item => {
                     <a href="https://mail.google.com/mail/?view=cm&to=${aluno.email}" 
                        target="_blank" 
                        class="email-btn">
-                        <i class="fas fa-envelope"></i> ${aluno.email}
+                        <i class="fas fa-envelope"></i> Entrar em contato
                     </a>
                 `;
             } else {
