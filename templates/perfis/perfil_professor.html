@@ -33,7 +33,7 @@
             <div class="cover"></div>
 
             <div class="avatar avatar-edit" id="btnEditarFoto">
-                <img src="{{ professor.photo_url if professor.photo_url else '/static/img/default_user.png' }}">
+                <img src="{{ professor.photo_url if professor.photo_url else '/static/img/iconpessoa-photoroom.png' }}">
                 <div class="avatar-overlay">
                     <i class="fas fa-camera"></i>
                 </div>
@@ -99,23 +99,24 @@
     <!-- RIGHT SIDEBAR -->
     <aside class="right-sidebar">
 
-        <div class="card news-card">
-            <h3>- Meus Projetos -</h3>
+            <div class="card news-card">
+                <h3>- Meus Projetos -</h3>
 
-            {% for p in projetos %}
-            <div class="mini-project">
-                <h4>{{ p.title }}</h4>
-                <p>{{ p.description[:80] }}...</p>
+                {% for p in projetos %}
+                <!-- ADICIONE a classe 'projeto-item' e o data-id -->
+                <div class="mini-project projeto-item" data-id="{{ p.id }}">
+                    <h4>{{ p.title }}</h4>
+                    <p>{{ p.description[:80] }}...</p>
+                </div>
+                {% endfor %}
+
+                <a class="view-all green open-create-project">+ Criar Novo Projeto</a>
             </div>
-            {% endfor %}
-
-            <a class="view-all green open-create-project">+ Criar Novo Projeto</a>
-        </div>
         <div class="card students-card">
             <h3>Lista de Perfis de Alunos</h3>
 
             {% for aluno in alunos[:3] %}
-                <div class="student-item" data-id="{{ aluno.id }}">
+                 <div class="student-item aluno-item" data-id="{{ aluno.id }}">
                     <img 
                         src="{{ aluno.photo_url if aluno.photo_url else '/static/img/default_user.png' }}" 
                         alt="Foto do aluno" 
@@ -131,6 +132,49 @@
 
             <a class="view-all" id="btnVerAlunos">Ver Todos os Alunos</a>
         </div>
+            <!-- MODAL PARA DETALHES DO ALUNO -->
+    <div id="modalAlunoDetalhes" class="modal">
+        <div class="modal-content modal-medium">
+            <div class="modal-header">
+                <h3>Perfil do Aluno</h3>
+                <span class="close-btn" onclick="fecharModalAluno()">&times;</span>
+            </div>
+            
+            <div class="modal-body">
+                <div class="aluno-perfil">
+                    <!-- Foto e informações básicas -->
+                    <div class="aluno-header">
+                        <img id="alunoFoto" src="" alt="Foto do aluno" class="aluno-foto-grande">
+                        <div class="aluno-info-basica">
+                            <h4 id="alunoNome"></h4>
+                            <p id="alunoClasse"></p>
+                        </div>
+                    </div>
+
+                    <!-- Habilidades -->
+                    <div class="info-section">
+                        <h5><i class="fas fa-code"></i> Habilidades</h5>
+                        <p id="alunoSkills"></p>
+                    </div>
+
+                    <!-- Experiências -->
+                    <div class="info-section">
+                        <h5><i class="fas fa-briefcase"></i> Experiências</h5>
+                        <p id="alunoExperiences"></p>
+                    </div>
+
+                    <!-- Contato -->
+                    <div class="info-section">
+                        <h5><i class="fas fa-address-book"></i> Contato</h5>
+                        <div class="contato-buttons">
+                            <div id="alunoContatoEmail" class="contato-item"></div>
+                            <div id="alunoContatoWhatsapp" class="contato-item"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     </aside>
 </main>
@@ -257,32 +301,6 @@
                 </div>
                 {% endfor %}
             </div>
-
-        </div>
-    </div>
-</div>
-<div class="modal" id="modalAlunoDetalhes">
-    <div class="modal-content">
-
-        <div class="modal-header">
-            <h2 id="alunoNome"></h2>
-            <button class="close-btn">&times;</button>
-        </div>
-
-        <div class="modal-body">
-
-            <img id="alunoFoto" class="student-avatar-lg">
-
-            <p><strong>Turma:</strong> <span id="alunoClasse"></span></p>
-
-            <p><strong>Habilidades:</strong></p>
-            <p id="alunoSkills"></p>
-
-            <p><strong>Experiências:</strong></p>
-            <p id="alunoExperiences"></p>
-
-            <div id="alunoContatoEmail"></div>
-            <div id="alunoContatoWhatsapp"></div>
 
         </div>
     </div>

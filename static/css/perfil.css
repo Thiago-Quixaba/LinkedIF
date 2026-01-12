@@ -43,8 +43,8 @@ body {
     background: var(--bg-card);
     border-bottom: 1px solid var(--border-light);
     padding: 12px 0;
-    position: sticky;
-    top: 0;
+    position: relative; 
+    top: auto;
     z-index: 100;
 }
 
@@ -53,7 +53,9 @@ body {
     margin: auto;
     padding: 0 20px;
 }
-
+.container a{
+    text-decoration: none;
+}
 .logo {
     font-size: 1.6rem;
     font-weight: bold;

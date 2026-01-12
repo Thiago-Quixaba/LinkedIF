@@ -402,3 +402,156 @@ document.querySelectorAll(".student-item").forEach(item => {
         }
     });
 });
+
+/* ============================================================
+   ABRIR MODAL DE EDIÇÃO AO CLICAR NO PROJETO
+============================================================ */
+
+// Event listener para abrir modal quando clicar em um projeto
+document.addEventListener("DOMContentLoaded", function() {
+    // Seleciona todos os projetos
+    document.querySelectorAll(".projeto-item").forEach(projeto => {
+        projeto.addEventListener("click", async function() {
+            let id = this.dataset.id;
+            
+            try {
+                // Busca os dados do projeto
+                let req = await fetch(`/projeto/view/${id}`);
+                let data = await req.json();
+
+                if (!data.success || !data.projeto) {
+                    alert("Erro ao carregar projeto.");
+                    return;
+                }
+
+                let projetoData = data.projeto;
+
+                // Preenche o modal de edição
+                document.getElementById("edit_id").value = projetoData.id;
+                document.getElementById("edit_titulo").value = projetoData.title;
+                document.getElementById("edit_descricao").value = projetoData.description || "";
+                document.getElementById("edit_requisitos").value = projetoData.requirements || "";
+                document.getElementById("edit_contact").value = projetoData.contact || "";
+                document.getElementById("edit_vacancies").value = projetoData.vacancies || "";
+
+                // Abre o modal
+                document.getElementById("modalEditarProjeto").classList.add("show");
+                document.body.style.overflow = "hidden";
+
+            } catch (error) {
+                console.error("Erro ao buscar projeto:", error);
+            }
+        });
+    });
+});
+
+// Se quiser um estilo diferente para indicar que é clicável, adicione este CSS:
+/*
+.mini-project.projeto-item {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mini-project.projeto-item:hover {
+    background-color: #f5f5f5;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+*/
+
+/* ============================================================
+   ABRIR MODAL COM INFORMAÇÕES DO ALUNO
+============================================================ */
+
+
+// Função para fechar o modal
+function fecharModalAluno() {
+    modalAluno.classList.remove("show");
+    document.body.style.overflow = "auto";
+}
+
+// Fechar ao clicar no X
+closeBtn.addEventListener("click", fecharModalAluno);
+
+// Fechar ao clicar fora do modal
+modalAluno.addEventListener("click", (e) => {
+    if (!modalContent.contains(e.target)) {
+        fecharModalAluno();
+    }
+});
+
+// Fechar com ESC
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modalAluno.classList.contains("show")) {
+        fecharModalAluno();
+    }
+});
+
+// Event listener para cada aluno
+document.querySelectorAll(".aluno-item").forEach(item => {
+    item.addEventListener("click", async () => {
+        const id = item.dataset.id;
+
+        try {
+            // Busca informações do aluno
+            const req = await fetch(`/aluno/view/${id}`);
+            const data = await req.json();
+
+            if (!data.success) {
+                console.error("Erro ao carregar aluno:", data.error);
+                return;
+            }
+
+            const aluno = data.aluno;
+            const perfil = data.perfil || {};
+
+            // Preenche os dados no modal
+            document.getElementById("alunoNome").textContent = aluno.name;
+            document.getElementById("alunoClasse").textContent = aluno.class;
+            document.getElementById("alunoSkills").textContent = perfil.skills || "Não informado";
+            document.getElementById("alunoExperiences").textContent = perfil.experiences || "Não informado";
+
+            // Foto do aluno
+            const fotoElement = document.getElementById("alunoFoto");
+            fotoElement.src = aluno.photo_url || "/static/img/default_user.png";
+            fotoElement.alt = `Foto de ${aluno.name}`;
+
+            // Email - link para Gmail
+            const emailContainer = document.getElementById("alunoContatoEmail");
+            if (aluno.email) {
+                emailContainer.innerHTML = `
+                    <a href="https://mail.google.com/mail/?view=cm&to=${aluno.email}" 
+                       target="_blank" 
+                       class="email-btn">
+                        <i class="fas fa-envelope"></i> ${aluno.email}
+                    </a>
+                `;
+            } else {
+                emailContainer.innerHTML = '<span class="sem-info">Email não informado</span>';
+            }
+
+            // WhatsApp - link direto
+            const whatsappContainer = document.getElementById("alunoContatoWhatsapp");
+            if (perfil.contact && perfil.contact.trim() !== "") {
+                const numero = perfil.contact.replace(/\D/g, "");
+                whatsappContainer.innerHTML = `
+                    <a href="https://wa.me/55${numero}" 
+                       target="_blank" 
+                       class="whatsapp-btn">
+                        <i class="fab fa-whatsapp"></i> Entrar em contato
+                    </a>
+                `;
+            } else {
+                whatsappContainer.innerHTML = '<span class="sem-info">WhatsApp não informado</span>';
+            }
+
+            // Abre o modal
+            modalAluno.classList.add("show");
+            document.body.style.overflow = "hidden";
+
+        } catch (error) {
+            console.error("Erro ao carregar aluno:", error);
+            alert("Erro ao carregar informações do aluno. Tente novamente.");
+        }
+    });
+});
