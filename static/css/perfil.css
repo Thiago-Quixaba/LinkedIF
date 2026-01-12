@@ -317,6 +317,8 @@ main.container {
     max-width: 550px;
     border: 1px solid var(--border-light);
     animation: popup 0.25s ease;
+    overflow-y: auto;
+    max-height: 90vh;
 }
 
 @keyframes popup {

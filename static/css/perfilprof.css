@@ -701,6 +701,8 @@ body {
     max-width: 550px;
     overflow: hidden;
     animation: fadeUp .25s ease;
+    overflow-y: auto;
+    max-height: 90vh;
 }
 
 @keyframes fadeUp {
