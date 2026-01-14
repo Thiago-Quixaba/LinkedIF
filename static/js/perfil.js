@@ -231,3 +231,119 @@ document.querySelectorAll(".contactInput").forEach(input => {
     });
 });
 
+/* ========================================
+   MODAL PARA EDITAR FOTO DO ALUNO
+======================================== */
+
+// Abrir modal de foto
+document.getElementById("btnEditarFotoAluno")?.addEventListener("click", () => {
+    document.getElementById("modalFotoAluno").classList.add("show");
+    document.body.style.overflow = "hidden";
+});
+
+// Fechar modal
+function closeModalFotoAluno() {
+    document.getElementById("modalFotoAluno").classList.remove("show");
+    document.body.style.overflow = "auto";
+}
+
+// Fechar ao clicar fora
+document.getElementById("modalFotoAluno")?.addEventListener("click", (e) => {
+    if (e.target === document.getElementById("modalFotoAluno")) {
+        closeModalFotoAluno();
+    }
+});
+
+// ========================================
+// UPLOAD DA FOTO - ALUNO
+// ========================================
+document.getElementById("formFotoAluno")?.addEventListener("submit", async e => {
+    e.preventDefault();
+
+    const file = document.getElementById("fotoAluno").files[0];
+    if (!file) {
+        alert("Selecione uma imagem!");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    // 1. Envia para o backend (upload_image)
+    const req = await fetch("/upload_image", {
+        method: "POST",
+        body: formData
+    });
+
+    const res = await req.json();
+
+    if (!res.success) {
+        alert("Erro ao enviar imagem: " + (res.error || "Desconhecido"));
+        return;
+    }
+
+    // 2. Atualiza a URL da foto no perfil do aluno
+    const alunoId = document.querySelector('input[name="aluno_id"]').value;
+    
+    try {
+        // Usa a mesma rota de atualizar perfil
+        const updateForm = new FormData();
+        updateForm.append("aluno_id", alunoId);
+        updateForm.append("photo_url", res.url);
+        
+        // Mantém os dados existentes
+        const skills = document.querySelector('textarea[name="skills"]').value;
+        const experiences = document.querySelector('textarea[name="experiences"]').value;
+        const contact = document.querySelector('input[name="contact"]').value;
+        
+        updateForm.append("skills", skills);
+        updateForm.append("experiences", experiences);
+        updateForm.append("contact", contact);
+
+        const updateReq = await fetch("/atualizar_perfil", {
+            method: "POST",
+            body: updateForm
+        });
+
+        const updateRes = await updateReq.json();
+
+        if (updateRes.update) {
+            // Atualiza visualmente as fotos
+            atualizarAvatar(updateRes.photo_url || res.url);
+            
+            // Fecha o modal
+            closeModalFotoAluno();
+            
+            // Recarrega a página para garantir sincronização
+            setTimeout(() => location.reload(), 800);
+        } else {
+            alert("Erro ao atualizar foto no perfil.");
+        }
+    } catch (error) {
+        console.error("Erro:", error);
+        alert("Erro ao processar a atualização da foto.");
+    }
+});
+
+// Função para atualizar avatar em todos os lugaresfunction atualizarAvatar(url) {
+    const finalUrl = url + "?v=" + Date.now();
+
+    // Atualiza no card do perfil
+    const avatarPerfil = document.querySelector(".avatar-edit img");
+    if (avatarPerfil) avatarPerfil.src = finalUrl;
+    
+    // Atualiza no preview do modal de edição
+    const preview = document.getElementById("previewFoto");
+    if (preview) preview.src = finalUrl;
+    
+    // Atualiza o campo hidden do formulário
+    const photoUrlInput = document.getElementById("photo_url");
+    if (photoUrlInput) photoUrlInput.value = finalUrl;
+// Torna a foto preview clicável para edição
+document.getElementById("previewFoto")?.addEventListener("click", () => {
+    closeEditModal(); // Fecha modal atual
+    setTimeout(() => {
+        document.getElementById("modalFotoAluno").classList.add("show");
+        document.body.style.overflow = "hidden";
+    }, 300);
+});
