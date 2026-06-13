@@ -27,66 +27,31 @@
                     <label for="dataDeNascimento">Data de Nascimento</label>
                     <input type="date" name="dataDeNascimento" id="dataDeNascimento" value="{{ session.get('aluno_temp', {}).get('birthdate', '') }}" placeholder="000.000.000-00" required>
 
-                    <label for="turma">Turma:</label>
+                    <label for="turma">Curso:</label>
                     {% set turma = session.get('aluno_temp', {}).get('class', '') %}
                     <select id="turma" name="turma" required>
                         <option value="" disabled {% if not turma %}selected{% endif %}>
                             Selecione seu curso
                         </option>
 
-                        <option value="1° INFO" {% if turma == "1° INFO" %}selected{% endif %}>
-                            1° Informática
+                        <option value="ADS" {% if turma == "ADS" %}selected{% endif %}>
+                            Análise e Desenvolvimento de Sistemas
                         </option>
 
-                        <option value="2° INFO" {% if turma == "2° INFO" %}selected{% endif %}>
-                            2° Informática
-                        </option>
-
-                        <option value="3° INFO" {% if turma == "3° INFO" %}selected{% endif %}>
-                            3° Informática
+                        <option value="INFO" {% if turma == "INFO" %}selected{% endif %}>
+                            Informática
                         </option>
                         
-                        <option value="1° ADM" {% if turma == "1° ADM" %}selected{% endif %}>
-                            1° Administração
+                        <option value="ADM" {% if turma == "ADM" %}selected{% endif %}>
+                            Administração
                         </option>
 
-                        <option value="2° ADM" {% if turma == "2° ADM" %}selected{% endif %}>
-                            2° Administração
-                        </option>
-
-                        <option value="3° ADM" {% if turma == "3° ADM A" %}selected{% endif %}>
-                            3° Administração A
-                        </option>
-                        <option value="3° ADM" {% if turma == "3° ADM B" %}selected{% endif %}>
-                            3° Administração B
-                        </option>
-
-                        <option value="1° AGRO" {% if turma == "1° AGRO" %}selected{% endif %}>
-                            1° Agropecuária
-                        </option>
-
-                        <option value="2° AGRO A" {% if turma == "2° AGRO A" %}selected{% endif %}>
-                            2° Agropecuária A
-                        </option>
-
-                        <option value="2° AGRO B" {% if turma == "2° AGRO B" %}selected{% endif %}>
-                            2° Agropecuária B
-                        </option>
-
-                        <option value="3° AGRO" {% if turma == "3° AGRO" %}selected{% endif %}>
-                            3° Agropecuária
+                        <option value="AGRO" {% if turma == "AGRO" %}selected{% endif %}>
+                            Agropecuária
                         </option>
                         
-                        <option value="1° MIN" {% if turma == "1° MIN" %}selected{% endif %}>
-                            1° Mineração
-                        </option>
-
-                        <option value="2° MIN" {% if turma == "2° MIN" %}selected{% endif %}>
-                            2° Mineração
-                        </option>
-
-                        <option value="3° MIN" {% if turma == "3° MIN" %}selected{% endif %}>
-                            3° Mineração
+                        <option value="MIN" {% if turma == "MIN" %}selected{% endif %}>
+                            Mineração
                         </option>
 
                     </select>
